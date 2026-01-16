@@ -3,46 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Store Dashboard 2026</title>
+    <title>Store Dashboard 2026 - Secure</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600&display=swap" rel="stylesheet">
-    <style>body { font-family: 'Kanit', sans-serif; background-color: #f0f4f8; }</style>
+    <style>
+        body { font-family: 'Kanit', sans-serif; background-color: #f0f4f8; }
+        .login-gradient { background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%); }
+        #mainContent { display: none; } /* ซ่อนเนื้อหาหลักไว้จนกว่าจะ Login */
+    </style>
 </head>
 <body class="pb-12">
 
-    <div class="max-w-md mx-auto px-4 pt-8">
-        <div class="bg-blue-600 rounded-3xl p-6 shadow-xl mb-8 text-white text-center">
-            <h1 class="text-2xl font-bold">ระบบติดตามลูกค้าไม่ใช้โค้ด (2026)</h1>
+    <div id="loginGate" class="fixed inset-0 z-50 flex items-center justify-center bg-gray-100 px-6">
+        <div class="bg-white w-full max-w-sm rounded-3xl p-8 shadow-2xl border border-gray-100">
+            <div class="text-center mb-8">
+                <div class="bg-blue-600 w-16 h-16 rounded-2xl mx-auto flex items-center justify-center mb-4 shadow-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800">ยืนยันตัวตน</h2>
+                <p class="text-gray-400 text-sm mt-1">กรุณากรอกรหัสเพื่อเข้าสู่ระบบ</p>
+            </div>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="text-[10px] font-bold text-gray-400 uppercase ml-1 tracking-widest">รหัสร้าน / ID</label>
+                    <input type="text" id="userId" class="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-blue-500 outline-none transition-all font-semibold" placeholder="กรอก ID">
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-gray-400 uppercase ml-1 tracking-widest">รหัสผ่าน / Password</label>
+                    <input type="password" id="userPass" class="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-blue-500 outline-none transition-all" placeholder="••••••••">
+                </div>
+                <button onclick="checkLogin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl shadow-lg transform active:scale-95 transition-all mt-4">
+                    เข้าสู่ระบบ
+                </button>
+                <p id="loginError" class="text-red-500 text-center text-sm font-medium hidden">❌ รหัสผ่านไม่ถูกต้อง ลองใหม่อีกครั้ง</p>
+            </div>
         </div>
+    </div>
 
-        <div class="bg-white rounded-3xl p-5 shadow-sm mb-8 border border-gray-100">
-            <label class="block text-gray-400 text-xs font-bold uppercase mb-2 ml-1">เลือกหมายเลขรหัสร้าน</label>
-            <select id="storeSelect" class="block w-full text-xl p-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-blue-500 outline-none transition-all font-semibold text-gray-800 shadow-inner">
-                <option value="">-- กำลังโหลดข้อมูล... --</option>
-            </select>
-        </div>
+    <div id="mainContent">
+        <div class="max-w-md mx-auto px-4 pt-8">
+            <div class="bg-blue-600 rounded-3xl p-6 shadow-xl mb-8 text-white text-center">
+                <h1 class="text-2xl font-bold">ระบบติดตามลูกค้า (2026)</h1>
+                <p class="text-blue-100 text-xs mt-1 opacity-80">ยินดีต้อนรับ, <span id="displayUser">User</span></p>
+            </div>
 
-        <div id="orderContainer" class="space-y-5">
-            <p class="text-center text-gray-400 italic py-20 bg-white rounded-3xl border border-dashed border-gray-200">
-                กรุณาเลือก รหัสร้าน เพื่อดูข้อมูล
-            </p>
+            <div class="bg-white rounded-3xl p-5 shadow-sm mb-8 border border-gray-100">
+                <label class="block text-gray-400 text-[10px] font-bold uppercase mb-2 ml-1 tracking-widest">เลือกหมายเลขรหัสร้าน</label>
+                <select id="storeSelect" class="block w-full text-xl p-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-blue-500 outline-none transition-all font-semibold text-gray-800 shadow-inner">
+                    <option value="">-- กำลังโหลดข้อมูล... --</option>
+                </select>
+            </div>
+
+            <div id="orderContainer" class="space-y-5">
+                <p class="text-center text-gray-400 italic py-20 bg-white rounded-3xl border border-dashed border-gray-200">
+                    กรุณาเลือก รหัสร้าน เพื่อดูข้อมูล
+                </p>
+            </div>
         </div>
     </div>
 
     <script>
-        const API_URL = ""; 
+        // ⚙️ CONFIGURATION
+        const API_URL = "https://script.google.com/macros/s/AKfycbzO5VNTBAQmzEnFvELrQe5ecSQZwtUc_LxhJDP5plb1d6UGl5ur5RGx0XRSnezCPKIG/exec"; // อย่าลืมใส่ URL นะครับ
+        const AUTH_CONFIG = {
+            "admin": "1234",      // ID: admin, Pass: 1234
+            "store01": "pass2026" // ID: store01, Pass: pass2026
+        };
+
         let allData = [];
 
+        // 🛡️ LOGIN LOGIC
+        function checkLogin() {
+            const id = document.getElementById('userId').value;
+            const pass = document.getElementById('userPass').value;
+            const errorMsg = document.getElementById('loginError');
+
+            if (AUTH_CONFIG[id] && AUTH_CONFIG[id] === pass) {
+                document.getElementById('loginGate').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+                document.getElementById('displayUser').textContent = id;
+                fetchData(); // เริ่มดึงข้อมูลเมื่อ Login ผ่าน
+            } else {
+                errorMsg.classList.remove('hidden');
+                document.getElementById('userPass').value = "";
+            }
+        }
+
+        // 📥 DATA LOGIC
         async function fetchData() {
             try {
-                // แก้ปัญหา CORS ด้วยการดึงแบบ Text และใช้ redirect: follow
                 const response = await fetch(API_URL, { redirect: 'follow' });
                 const text = await response.text();
                 allData = JSON.parse(text); 
                 populateDropdown(allData);
             } catch (error) {
                 console.error("Fetch Error:", error);
-                document.getElementById('storeSelect').innerHTML = '<option>เชื่อมต่อล้มเหลว (ลอง Refresh)</option>';
+                document.getElementById('storeSelect').innerHTML = '<option>เชื่อมต่อล้มเหลว (เช็ค API URL)</option>';
             }
         }
 
@@ -83,9 +142,8 @@
                     return item[key] || '-';
                 };
 
-                // การ์ดข้อมูลแบบอ่านชื่อชัดๆ บนมือถือ
                 container.innerHTML += `
-                    <div class="bg-white rounded-3xl p-6 shadow-md border-t-8 border-blue-500 transform active:scale-95 transition-transform">
+                    <div class="bg-white rounded-3xl p-6 shadow-md border-t-8 border-blue-500 transform active:scale-95 transition-transform animate-render">
                         <div class="flex justify-between items-start mb-4">
                             <div class="flex-1">
                                 <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">ชื่อผู้สั่ง</p>
@@ -114,8 +172,6 @@
                 `;
             });
         });
-
-        fetchData();
     </script>
 </body>
 </html>
