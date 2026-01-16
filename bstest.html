@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>Store Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+
+    <div class="max-w-4xl mx-auto bg-white p-6 rounded-xl shadow-md">
+        <h1 class="text-2xl font-bold mb-6 text-gray-800">แดชบอร์ดข้อมูลร้านค้า</h1>
+
+        <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-700 mb-2">กรุณาเลือก รหัสร้าน:</label>
+            <select id="storeSelect" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                <option value="">-- กำลังโหลดข้อมูล --</option>
+            </select>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="min-w-full table-auto border-collapse">
+                <thead>
+                    <tr class="bg-gray-200 text-left text-sm font-semibold text-gray-600">
+                        <th class="px-4 py-2 border">เบอร์ผู้สั่ง</th>
+                        <th class="px-4 py-2 border">ชื่อผู้สั่ง</th>
+                        <th class="px-4 py-2 border">ราคาสุทธิ</th>
+                        <th class="px-4 py-2 border">เวลารับสินค้า</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody" class="text-gray-700 text-sm">
+                    <tr>
+                        <td colspan="4" class="px-4 py-4 text-center text-gray-400">กรุณาเลือกข้อมูลจากด้านบน</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "YOUR_APPS_SCRIPT_URL_HERE"; 
+        let allData = [];
+
+        // 1. โหลดข้อมูลจาก Google Sheets
+        async function fetchData() {
+            try {
+                const response = await fetch(API_URL);
+                allData = await response.json();
+                populateDropdown(allData);
+            } catch (error) {
+                console.error("Error loading data:", error);
+                document.getElementById('storeSelect').innerHTML = '<option>โหลดข้อมูลไม่สำเร็จ</option>';
+            }
+        }
+
+        // 2. ใส่รายการ รหัสร้าน ลงใน Dropdown
+        function populateDropdown(data) {
+            const select = document.getElementById('storeSelect');
+            const stores = [...new Set(data.map(item => item.รหัสร้าน))]; // กรองชื่อร้านไม่ให้ซ้ำ
+            
+            select.innerHTML = '<option value="">-- เลือก รหัสร้าน --</option>';
+            stores.forEach(store => {
+                const option = document.createElement('option');
+                option.value = store;
+                option.textContent = store;
+                select.appendChild(option);
+            });
+        }
+
+        // 3. กรองข้อมูลและแสดงผลในตาราง
+        document.getElementById('storeSelect').addEventListener('change', function(e) {
+            const selectedStore = e.target.value;
+            const tableBody = document.getElementById('tableBody');
+            
+            // กรองข้อมูลตาม รหัสร้าน ที่เลือก
+            const filteredData = allData.filter(item => item.รหัสร้าน == selectedStore);
+
+            tableBody.innerHTML = ""; // ล้างค่าเก่า
+
+            if (filteredData.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="4" class="px-4 py-4 text-center">ไม่พบข้อมูล</td></tr>';
+                return;
+            }
+
+            filteredData.forEach(item => {
+                const row = `
+                    <tr class="hover:bg-gray-50 border-b">
+                        <td class="px-4 py-2 border">${item.เบอร์ผู้สั่ง || '-'}</td>
+                        <td class="px-4 py-2 border">${item.ชื่อผู้สั่ง || '-'}</td>
+                        <td class="px-4 py-2 border">${item.ราคาสุทธิ || '0'}</td>
+                        <td class="px-4 py-2 border">${item.เวลารับสินค้า || '-'}</td>
+                    </tr>
+                `;
+                tableBody.innerHTML += row;
+            });
+        });
+
+        // เริ่มต้นโหลดข้อมูล
+        fetchData();
+    </script>
+</body>
+</html>
