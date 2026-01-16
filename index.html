@@ -13,7 +13,7 @@
         <div class="mb-6">
             <label class="block text-sm font-medium text-gray-700 mb-2">กรุณาเลือก รหัสร้าน:</label>
             <select id="storeSelect" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                <option value="">-- กำลังโหลดข้อมูล --</option>
+                <option value="">-- กำลังโหลดข้อมูล... --</option>
             </select>
         </div>
 
@@ -21,15 +21,15 @@
             <table class="min-w-full table-auto border-collapse">
                 <thead>
                     <tr class="bg-gray-200 text-left text-sm font-semibold text-gray-600">
-                        <th class="px-4 py-2 border">เบอร์ผู้สั่ง</th>
-                        <th class="px-4 py-2 border">ชื่อผู้สั่ง</th>
-                        <th class="px-4 py-2 border">ราคาสุทธิ</th>
-                        <th class="px-4 py-2 border">เวลารับสินค้า</th>
+                        <th class="px-4 py-2 border text-center">เบอร์ผู้สั่ง</th>
+                        <th class="px-4 py-2 border text-center">ชื่อผู้สั่ง</th>
+                        <th class="px-4 py-2 border text-center">ราคาสุทธิ</th>
+                        <th class="px-4 py-2 border text-center">เวลารับสินค้า</th>
                     </tr>
                 </thead>
-                <tbody id="tableBody" class="text-gray-700 text-sm">
+                <tbody id="tableBody" class="text-gray-700 text-sm text-center">
                     <tr>
-                        <td colspan="4" class="px-4 py-4 text-center text-gray-400">กรุณาเลือกข้อมูลจากด้านบน</td>
+                        <td colspan="4" class="px-4 py-10 text-center text-gray-400">กรุณาเลือกข้อมูลจากด้านบน</td>
                     </tr>
                 </tbody>
             </table>
@@ -37,64 +37,85 @@
     </div>
 
     <script>
-        const API_URL = "https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLgvCY6doBiJ2oz4x7EFTJZyEjqbMoparR6V9KYoGnlOxgec8jeEVtbUIj8ugPhjuhJDrkRR7XtjUY9eIV9cZTuNFPIJrl18TQ6Nntqi_WP5HZiUUxpzE3QBtnZzIpneBLh6iXQOM0JeVvovvMAUdACtMx5mTIo00psXfDpzHadRUufTlnSOU75a3RXnw5Cf9l42SnF3AFbyK0lk3dmWHsH0lp8qBTBzN_-RJ9N3tmmu1CBoxEn_o-4LoG9YSOpZ81USfvMg51bdWPMauE5epsEmCvYN7Q&lib=MbYqQw0DfnVniw0KCX3cUtARb25tth-fC"; 
+        // *** สำคัญ: เปลี่ยน URL เป็นลิงก์ที่ลงท้ายด้วย /exec เท่านั้น ***
+        const API_URL = "https://script.google.com/macros/s/AKfycbzwO9GgIWNgCyCTK4awvpEbGSl5esImA.../exec"; 
         let allData = [];
 
-        // 1. โหลดข้อมูลจาก Google Sheets
         async function fetchData() {
+            const select = document.getElementById('storeSelect');
             try {
                 const response = await fetch(API_URL);
+                if (!response.ok) throw new Error('Network response was not ok');
+                
                 allData = await response.json();
+                console.log("Data Received:", allData); // ดูข้อมูลใน Console
+
+                if (allData.length === 0) {
+                    select.innerHTML = '<option>ไม่พบข้อมูลใน Google Sheets</option>';
+                    return;
+                }
+
                 populateDropdown(allData);
             } catch (error) {
                 console.error("Error loading data:", error);
-                document.getElementById('storeSelect').innerHTML = '<option>โหลดข้อมูลไม่สำเร็จ</option>';
+                select.innerHTML = '<option>เกิดข้อผิดพลาดในการโหลดข้อมูล</option>';
             }
         }
 
-        // 2. ใส่รายการ รหัสร้าน ลงใน Dropdown
         function populateDropdown(data) {
             const select = document.getElementById('storeSelect');
-            const stores = [...new Set(data.map(item => item.รหัสร้าน))]; // กรองชื่อร้านไม่ให้ซ้ำ
+            
+            // ใช้ความยืดหยุ่นในการหาหัวตาราง "รหัสร้าน" (ป้องกันเรื่องช่องว่าง)
+            const stores = [...new Set(data.map(item => {
+                const key = Object.keys(item).find(k => k.trim() === 'รหัสร้าน');
+                return item[key];
+            }))].filter(s => s); // กรองค่าว่างออก
             
             select.innerHTML = '<option value="">-- เลือก รหัสร้าน --</option>';
-            stores.forEach(store => {
+            stores.sort().forEach(store => {
                 const option = document.createElement('option');
                 option.value = store;
-                option.textContent = store;
+                option.textContent = `รหัสร้าน: ${store}`;
                 select.appendChild(option);
             });
         }
 
-        // 3. กรองข้อมูลและแสดงผลในตาราง
         document.getElementById('storeSelect').addEventListener('change', function(e) {
             const selectedStore = e.target.value;
             const tableBody = document.getElementById('tableBody');
             
-            // กรองข้อมูลตาม รหัสร้าน ที่เลือก
-            const filteredData = allData.filter(item => item.รหัสร้าน == selectedStore);
+            // ค้นหา Key ที่ตรงกับเงื่อนไขของเราแบบยืดหยุ่น
+            const filteredData = allData.filter(item => {
+                const key = Object.keys(item).find(k => k.trim() === 'รหัสร้าน');
+                return item[key] == selectedStore;
+            });
 
-            tableBody.innerHTML = ""; // ล้างค่าเก่า
+            tableBody.innerHTML = "";
 
-            if (filteredData.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="4" class="px-4 py-4 text-center">ไม่พบข้อมูล</td></tr>';
+            if (!selectedStore) {
+                tableBody.innerHTML = '<tr><td colspan="4" class="px-4 py-10 text-center text-gray-400">กรุณาเลือกข้อมูลจากด้านบน</td></tr>';
                 return;
             }
 
             filteredData.forEach(item => {
+                // ค้นหา Key ต่างๆ แบบไม่สนช่องว่าง (Trim)
+                const getVal = (name) => {
+                    const key = Object.keys(item).find(k => k.trim() === name);
+                    return item[key] || '-';
+                };
+
                 const row = `
                     <tr class="hover:bg-gray-50 border-b">
-                        <td class="px-4 py-2 border">${item.เบอร์ผู้สั่ง || '-'}</td>
-                        <td class="px-4 py-2 border">${item.ชื่อผู้สั่ง || '-'}</td>
-                        <td class="px-4 py-2 border">${item.ราคาสุทธิ || '0'}</td>
-                        <td class="px-4 py-2 border">${item.เวลารับสินค้า || '-'}</td>
+                        <td class="px-4 py-3 border">${getVal('เบอร์ผู้สั่ง')}</td>
+                        <td class="px-4 py-3 border text-left">${getVal('ชื่อผู้สั่ง')}</td>
+                        <td class="px-4 py-3 border text-right font-mono">${Number(getVal('ราคาสุทธิ')).toLocaleString()}</td>
+                        <td class="px-4 py-3 border text-blue-600 font-semibold">${getVal('เวลารับสินค้า')}</td>
                     </tr>
                 `;
                 tableBody.innerHTML += row;
             });
         });
 
-        // เริ่มต้นโหลดข้อมูล
         fetchData();
     </script>
 </body>
