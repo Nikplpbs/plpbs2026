@@ -2,56 +2,47 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Dashboard 2026</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Store Dashboard 2026</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Kanit', sans-serif; background-color: #f8fafc; }
-    </style>
+    <style>body { font-family: 'Kanit', sans-serif; background-color: #f1f5f9; }</style>
 </head>
 <body class="pb-10">
 
     <div class="max-w-md mx-auto px-4 pt-6">
-        <div class="bg-indigo-600 rounded-3xl p-6 shadow-xl mb-6 text-white text-center">
-            <h1 class="text-xl font-bold">ข้อมูลออเดอร์ร้านค้า</h1>
-            <p class="text-indigo-100 text-xs mt-1 opacity-80">ปีงบประมาณ 2026</p>
+        <div class="bg-blue-600 rounded-3xl p-6 shadow-lg mb-6 text-white text-center">
+            <h1 class="text-xl font-bold">ข้อมูลร้านค้า (2026)</h1>
         </div>
 
-        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 mb-6">
-            <label class="block text-slate-400 text-[10px] font-bold uppercase mb-2 ml-1">เลือกหมายเลขรหัสร้าน</label>
-            <div class="relative">
-                <select id="storeSelect" class="block w-full text-lg font-semibold p-4 bg-slate-50 border-2 border-slate-100 rounded-xl focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 transition-all appearance-none text-slate-800">
-                    <option value="">-- กำลังโหลดข้อมูล... --</option>
-                </select>
-                <div class="pointer-events-none absolute inset-y-0 right-4 flex items-center text-slate-400">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                </div>
-            </div>
+        <div class="bg-white rounded-2xl p-4 shadow-sm mb-6">
+            <label class="block text-gray-400 text-xs font-bold mb-2 uppercase ml-1">เลือก รหัสร้าน</label>
+            <select id="storeSelect" class="block w-full text-lg p-4 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-blue-500 outline-none transition-all">
+                <option value="">-- กำลังเชื่อมต่อข้อมูล... --</option>
+            </select>
         </div>
 
         <div id="orderContainer" class="space-y-4">
-            <div id="emptyState" class="py-20 text-center text-slate-400 italic">
-                <svg class="w-12 h-12 mx-auto mb-3 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
-                <p>เลือก รหัสร้าน เพื่อดูรายชื่อลูกค้า</p>
-            </div>
+            <p id="loadingMsg" class="text-center text-gray-400 italic py-10">กรุณาเลือก รหัสร้าน เพื่อดูข้อมูล</p>
         </div>
     </div>
 
     <script>
-        // ใช้ URL เว็บแอปของคุณที่ลงท้ายด้วย /exec
+        // *** วาง URL เว็บแอปของคุณที่นี่ ***
         const API_URL = "https://script.google.com/macros/s/AKfycbwCav2Srp8cQ5x0w8ONIP9mT8qveE0if_IGUBFQ01A/exec"; 
         let allData = [];
 
         async function fetchData() {
             try {
+                // เพิ่มโหมดการดึงข้อมูลเพื่อแก้ปัญหา CORS โดยตรง
                 const response = await fetch(API_URL, { redirect: 'follow' });
                 const text = await response.text();
-                allData = JSON.parse(text);
+                allData = JSON.parse(text); // แปลงข้อความเป็น JSON ภายในเครื่องเราเอง
+                
                 populateDropdown(allData);
             } catch (error) {
                 console.error("Error:", error);
-                document.getElementById('storeSelect').innerHTML = '<option>โหลดข้อมูลล้มเหลว</option>';
+                document.getElementById('storeSelect').innerHTML = '<option>เชื่อมต่อล้มเหลว</option>';
             }
         }
 
@@ -66,7 +57,7 @@
             stores.forEach(store => {
                 const option = document.createElement('option');
                 option.value = store;
-                option.textContent = `🏪 รหัสร้าน: ${store}`;
+                option.textContent = "🏪 รหัสร้าน: " + store;
                 select.appendChild(option);
             });
         }
@@ -76,7 +67,7 @@
             const container = document.getElementById('orderContainer');
             
             if (!selectedStore) {
-                container.innerHTML = `<div id="emptyState" class="py-20 text-center text-slate-400 italic">เลือก รหัสร้าน เพื่อดูรายชื่อลูกค้า</div>`;
+                container.innerHTML = '<p class="text-center text-gray-400 py-10">กรุณาเลือก รหัสร้าน</p>';
                 return;
             }
 
@@ -86,47 +77,27 @@
             });
 
             container.innerHTML = "";
-
-            if (filtered.length === 0) {
-                container.innerHTML = `<div class="text-center py-10 text-slate-400">ไม่พบรายการสั่งซื้อ</div>`;
-                return;
-            }
-
             filtered.forEach(item => {
                 const val = (name) => {
                     const key = Object.keys(item).find(k => k.trim() === name);
                     return item[key] || '-';
                 };
 
-                const price = Number(val('ราคาสุทธิ')).toLocaleString();
-
-                // สร้าง Card ข้อมูลที่อ่านง่ายบนมือถือ
                 container.innerHTML += `
-                    <div class="bg-white rounded-2xl p-5 shadow-sm border-l-4 border-indigo-500 flex flex-col space-y-3">
-                        <div class="flex justify-between items-start">
-                            <div class="flex-1">
-                                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-tight">ชื่อผู้สั่ง</p>
-                                <p class="text-lg font-bold text-slate-800 leading-tight">${val('ชื่อผู้สั่ง')}</p>
-                            </div>
-                            <div class="text-right ml-2">
-                                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-tight">เวลารับ</p>
-                                <span class="inline-block bg-indigo-50 text-indigo-700 px-2 py-1 rounded-lg text-[11px] font-bold mt-1">
-                                    ${val('เวลารับสินค้า').toString().split('T')[0]}
-                                </span>
-                            </div>
+                    <div class="bg-white rounded-2xl p-5 shadow-sm border-l-4 border-blue-500">
+                        <div class="flex justify-between border-b pb-2 mb-2">
+                            <span class="text-xs text-gray-400 font-bold uppercase">ชื่อผู้สั่ง</span>
+                            <span class="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded font-bold">${val('เวลารับสินค้า')}</span>
                         </div>
-                        
-                        <div class="grid grid-cols-2 gap-4 pt-3 border-t border-slate-50">
+                        <p class="text-lg font-bold text-gray-800">${val('ชื่อผู้สั่ง')}</p>
+                        <div class="flex justify-between items-end mt-4">
                             <div>
-                                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-tight">เบอร์โทรศัพท์</p>
-                                <a href="tel:${val('เบอร์ผู้สั่ง')}" class="text-blue-600 font-semibold text-sm flex items-center mt-1">
-                                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path></svg>
-                                    ${val('เบอร์ผู้สั่ง')}
-                                </a>
+                                <p class="text-[10px] text-gray-400 font-bold uppercase">เบอร์โทร</p>
+                                <a href="tel:${val('เบอร์ผู้สั่ง')}" class="text-blue-500 font-bold">${val('เบอร์ผู้สั่ง')}</a>
                             </div>
                             <div class="text-right">
-                                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-tight">ยอดสุทธิ</p>
-                                <p class="text-xl font-black text-emerald-600">฿${price}</p>
+                                <p class="text-[10px] text-gray-400 font-bold uppercase">ราคาสุทธิ</p>
+                                <p class="text-xl font-black text-green-600">฿${Number(val('ราคาสุทธิ')).toLocaleString()}</p>
                             </div>
                         </div>
                     </div>
