@@ -8,28 +8,28 @@
 <body class="bg-gray-100 p-8">
 
     <div class="max-w-4xl mx-auto bg-white p-6 rounded-xl shadow-md">
-        <h1 class="text-2xl font-bold mb-6 text-gray-800">แดชบอร์ดข้อมูลร้านค้า</h1>
+        <h1 class="text-2xl font-bold mb-6 text-gray-800 text-center">แดชบอร์ดข้อมูลร้านค้า</h1>
 
         <div class="mb-6">
             <label class="block text-sm font-medium text-gray-700 mb-2">กรุณาเลือก รหัสร้าน:</label>
             <select id="storeSelect" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                <option value="">-- กำลังโหลดข้อมูล... --</option>
+                <option value="">-- กำลังเชื่อมต่อข้อมูล... --</option>
             </select>
         </div>
 
         <div class="overflow-x-auto">
-            <table class="min-w-full table-auto border-collapse">
+            <table class="min-w-full table-auto border-collapse border border-gray-200">
                 <thead>
-                    <tr class="bg-gray-200 text-left text-sm font-semibold text-gray-600">
-                        <th class="px-4 py-2 border text-center">เบอร์ผู้สั่ง</th>
-                        <th class="px-4 py-2 border text-center">ชื่อผู้สั่ง</th>
-                        <th class="px-4 py-2 border text-center">ราคาสุทธิ</th>
-                        <th class="px-4 py-2 border text-center">เวลารับสินค้า</th>
+                    <tr class="bg-gray-100 text-sm font-semibold text-gray-600">
+                        <th class="px-4 py-2 border">เบอร์ผู้สั่ง</th>
+                        <th class="px-4 py-2 border">ชื่อผู้สั่ง</th>
+                        <th class="px-4 py-2 border">ราคาสุทธิ</th>
+                        <th class="px-4 py-2 border">เวลารับสินค้า</th>
                     </tr>
                 </thead>
-                <tbody id="tableBody" class="text-gray-700 text-sm text-center">
+                <tbody id="tableBody" class="text-gray-700 text-sm">
                     <tr>
-                        <td colspan="4" class="px-4 py-10 text-center text-gray-400">กรุณาเลือกข้อมูลจากด้านบน</td>
+                        <td colspan="4" class="px-4 py-10 text-center text-gray-400">กรุณาเลือกรหัสร้านค้าด้านบน</td>
                     </tr>
                 </tbody>
             </table>
@@ -37,86 +37,29 @@
     </div>
 
     <script>
-        // *** สำคัญ: เปลี่ยน URL เป็นลิงก์ที่ลงท้ายด้วย /exec เท่านั้น ***
-        const API_URL = "https://script.google.com/macros/s/AKfycbwCav2Srp8cQ5x0w8ONIP9mT8qveE0if_IGUBFQ01A/exec"; 
+        // ใช้ URL เว็บแอปของคุณที่นี่
+        const API_URL = "https://script.google.com/macros/s/AKfycbwgdSXmpSRtRbGRhM0Qz-2kojNGnHSkk1XdW7yqo6W8SWSYrAWyTDRozPQQQvmdp3wr/exec"; 
         let allData = [];
 
         async function fetchData() {
             const select = document.getElementById('storeSelect');
             try {
                 const response = await fetch(API_URL);
-                if (!response.ok) throw new Error('Network response was not ok');
+                const textData = await response.text(); // รับเป็น Text เพื่อเลี่ยง CORS
+                allData = JSON.parse(textData); // แปลงเป็น JSON เอง
                 
-                allData = await response.json();
-                console.log("Data Received:", allData); // ดูข้อมูลใน Console
-
-                if (allData.length === 0) {
-                    select.innerHTML = '<option>ไม่พบข้อมูลใน Google Sheets</option>';
-                    return;
-                }
-
+                console.log("Data Loaded Successfully");
                 populateDropdown(allData);
             } catch (error) {
-                console.error("Error loading data:", error);
-                select.innerHTML = '<option>เกิดข้อผิดพลาดในการโหลดข้อมูล</option>';
+                console.error("Fetch Error:", error);
+                select.innerHTML = '<option>ไม่สามารถโหลดข้อมูลได้ (ตรวจสอบ CORS/URL)</option>';
             }
         }
 
         function populateDropdown(data) {
             const select = document.getElementById('storeSelect');
-            
-            // ใช้ความยืดหยุ่นในการหาหัวตาราง "รหัสร้าน" (ป้องกันเรื่องช่องว่าง)
+            // หาคอลัมน์ 'รหัสร้าน' แบบไม่สนช่องว่าง
             const stores = [...new Set(data.map(item => {
                 const key = Object.keys(item).find(k => k.trim() === 'รหัสร้าน');
                 return item[key];
-            }))].filter(s => s); // กรองค่าว่างออก
-            
-            select.innerHTML = '<option value="">-- เลือก รหัสร้าน --</option>';
-            stores.sort().forEach(store => {
-                const option = document.createElement('option');
-                option.value = store;
-                option.textContent = `รหัสร้าน: ${store}`;
-                select.appendChild(option);
-            });
-        }
-
-        document.getElementById('storeSelect').addEventListener('change', function(e) {
-            const selectedStore = e.target.value;
-            const tableBody = document.getElementById('tableBody');
-            
-            // ค้นหา Key ที่ตรงกับเงื่อนไขของเราแบบยืดหยุ่น
-            const filteredData = allData.filter(item => {
-                const key = Object.keys(item).find(k => k.trim() === 'รหัสร้าน');
-                return item[key] == selectedStore;
-            });
-
-            tableBody.innerHTML = "";
-
-            if (!selectedStore) {
-                tableBody.innerHTML = '<tr><td colspan="4" class="px-4 py-10 text-center text-gray-400">กรุณาเลือกข้อมูลจากด้านบน</td></tr>';
-                return;
-            }
-
-            filteredData.forEach(item => {
-                // ค้นหา Key ต่างๆ แบบไม่สนช่องว่าง (Trim)
-                const getVal = (name) => {
-                    const key = Object.keys(item).find(k => k.trim() === name);
-                    return item[key] || '-';
-                };
-
-                const row = `
-                    <tr class="hover:bg-gray-50 border-b">
-                        <td class="px-4 py-3 border">${getVal('เบอร์ผู้สั่ง')}</td>
-                        <td class="px-4 py-3 border text-left">${getVal('ชื่อผู้สั่ง')}</td>
-                        <td class="px-4 py-3 border text-right font-mono">${Number(getVal('ราคาสุทธิ')).toLocaleString()}</td>
-                        <td class="px-4 py-3 border text-blue-600 font-semibold">${getVal('เวลารับสินค้า')}</td>
-                    </tr>
-                `;
-                tableBody.innerHTML += row;
-            });
-        });
-
-        fetchData();
-    </script>
-</body>
-</html>
+            }))].filter(s => s);
