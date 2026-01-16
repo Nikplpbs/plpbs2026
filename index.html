@@ -5,44 +5,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Store Dashboard 2026</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
-    <style>body { font-family: 'Kanit', sans-serif; background-color: #f1f5f9; }</style>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600&display=swap" rel="stylesheet">
+    <style>body { font-family: 'Kanit', sans-serif; background-color: #f0f4f8; }</style>
 </head>
-<body class="pb-10">
+<body class="pb-12">
 
-    <div class="max-w-md mx-auto px-4 pt-6">
-        <div class="bg-blue-600 rounded-3xl p-6 shadow-lg mb-6 text-white text-center">
-            <h1 class="text-xl font-bold">ข้อมูลร้านค้า (2026)</h1>
+    <div class="max-w-md mx-auto px-4 pt-8">
+        <div class="bg-blue-600 rounded-3xl p-6 shadow-xl mb-8 text-white text-center">
+            <h1 class="text-2xl font-bold">ข้อมูลร้านค้า (2026)</h1>
         </div>
 
-        <div class="bg-white rounded-2xl p-4 shadow-sm mb-6">
-            <label class="block text-gray-400 text-xs font-bold mb-2 uppercase ml-1">เลือก รหัสร้าน</label>
-            <select id="storeSelect" class="block w-full text-lg p-4 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-blue-500 outline-none transition-all">
-                <option value="">-- กำลังเชื่อมต่อข้อมูล... --</option>
+        <div class="bg-white rounded-3xl p-5 shadow-sm mb-8 border border-gray-100">
+            <label class="block text-gray-400 text-xs font-bold uppercase mb-2 ml-1">เลือกหมายเลขรหัสร้าน</label>
+            <select id="storeSelect" class="block w-full text-xl p-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-blue-500 outline-none transition-all font-semibold text-gray-800 shadow-inner">
+                <option value="">-- กำลังโหลดข้อมูล... --</option>
             </select>
         </div>
 
-        <div id="orderContainer" class="space-y-4">
-            <p id="loadingMsg" class="text-center text-gray-400 italic py-10">กรุณาเลือก รหัสร้าน เพื่อดูข้อมูล</p>
+        <div id="orderContainer" class="space-y-5">
+            <p class="text-center text-gray-400 italic py-20 bg-white rounded-3xl border border-dashed border-gray-200">
+                กรุณาเลือก รหัสร้าน เพื่อดูข้อมูล
+            </p>
         </div>
     </div>
 
     <script>
-        // *** วาง URL เว็บแอปของคุณที่นี่ ***
-        const API_URL = "https://script.google.com/macros/s/AKfycbzL9WSY5WwKlD26cEWQo-W7GlTx14itFIqNhGelA0e-6kv7zijpoBsJcur_Kybul9Q/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbzO5VNTBAQmzEnFvELrQe5ecSQZwtUc_LxhJDP5plb1d6UGl5ur5RGx0XRSnezCPKIG/exec"; 
         let allData = [];
 
         async function fetchData() {
             try {
-                // เพิ่มโหมดการดึงข้อมูลเพื่อแก้ปัญหา CORS โดยตรง
+                // แก้ปัญหา CORS ด้วยการดึงแบบ Text และใช้ redirect: follow
                 const response = await fetch(API_URL, { redirect: 'follow' });
                 const text = await response.text();
-                allData = JSON.parse(text); // แปลงข้อความเป็น JSON ภายในเครื่องเราเอง
-                
+                allData = JSON.parse(text); 
                 populateDropdown(allData);
             } catch (error) {
-                console.error("Error:", error);
-                document.getElementById('storeSelect').innerHTML = '<option>เชื่อมต่อล้มเหลว</option>';
+                console.error("Fetch Error:", error);
+                document.getElementById('storeSelect').innerHTML = '<option>เชื่อมต่อล้มเหลว (ลอง Refresh)</option>';
             }
         }
 
@@ -67,7 +67,7 @@
             const container = document.getElementById('orderContainer');
             
             if (!selectedStore) {
-                container.innerHTML = '<p class="text-center text-gray-400 py-10">กรุณาเลือก รหัสร้าน</p>';
+                container.innerHTML = '<p class="text-center text-gray-400 py-10 italic">กรุณาเลือก รหัสร้าน</p>';
                 return;
             }
 
@@ -83,21 +83,31 @@
                     return item[key] || '-';
                 };
 
+                // การ์ดข้อมูลแบบอ่านชื่อชัดๆ บนมือถือ
                 container.innerHTML += `
-                    <div class="bg-white rounded-2xl p-5 shadow-sm border-l-4 border-blue-500">
-                        <div class="flex justify-between border-b pb-2 mb-2">
-                            <span class="text-xs text-gray-400 font-bold uppercase">ชื่อผู้สั่ง</span>
-                            <span class="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded font-bold">${val('เวลารับสินค้า')}</span>
-                        </div>
-                        <p class="text-lg font-bold text-gray-800">${val('ชื่อผู้สั่ง')}</p>
-                        <div class="flex justify-between items-end mt-4">
-                            <div>
-                                <p class="text-[10px] text-gray-400 font-bold uppercase">เบอร์โทร</p>
-                                <a href="tel:${val('เบอร์ผู้สั่ง')}" class="text-blue-500 font-bold">${val('เบอร์ผู้สั่ง')}</a>
+                    <div class="bg-white rounded-3xl p-6 shadow-md border-t-8 border-blue-500 transform active:scale-95 transition-transform">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="flex-1">
+                                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">ชื่อผู้สั่ง</p>
+                                <p class="text-2xl font-bold text-gray-900 leading-tight mt-1">${val('ชื่อผู้สั่ง')}</p>
                             </div>
                             <div class="text-right">
-                                <p class="text-[10px] text-gray-400 font-bold uppercase">ราคาสุทธิ</p>
-                                <p class="text-xl font-black text-green-600">฿${Number(val('ราคาสุทธิ')).toLocaleString()}</p>
+                                <span class="bg-blue-50 text-blue-600 px-3 py-1 rounded-xl text-[10px] font-bold">
+                                    ${val('เวลารับสินค้า').toString().split('T')[0]}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-6 pt-4 border-t border-gray-50">
+                            <div>
+                                <p class="text-[10px] text-gray-400 font-bold uppercase mb-1">เบอร์โทรศัพท์</p>
+                                <a href="tel:${val('เบอร์ผู้สั่ง')}" class="text-blue-500 font-bold text-lg underline flex items-center">
+                                    ${val('เบอร์ผู้สั่ง')}
+                                </a>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-[10px] text-gray-400 font-bold uppercase mb-1">ราคาสุทธิ</p>
+                                <p class="text-2xl font-black text-green-600 tracking-tight">฿${Number(val('ราคาสุทธิ')).toLocaleString()}</p>
                             </div>
                         </div>
                     </div>
