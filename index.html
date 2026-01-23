@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Store Dashboard 2026 - Secure (PLPBS)</title>
+    <title>Store Dashboard 2026 - Analytics (PLPBS)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600&display=swap" rel="stylesheet">
     <style>
@@ -53,7 +53,7 @@
                 <p class="text-blue-100 text-xs mt-1 opacity-80">ผู้ใช้งานปัจจุบัน: <span id="displayUser" class="font-bold underline">User</span></p>
             </div>
 
-            <div id="filterSection" class="bg-white rounded-3xl p-5 shadow-sm mb-8 border border-gray-100 space-y-4 transition-all duration-300">
+            <div id="filterSection" class="bg-white rounded-3xl p-5 shadow-sm mb-6 border border-gray-100 space-y-4 transition-all duration-300">
                 <div>
                     <label class="block text-gray-400 text-[10px] font-bold uppercase mb-2 ml-1 tracking-widest">1. เลือกหมายเลขรหัสร้าน</label>
                     <select id="storeSelect" class="block w-full text-xl p-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-blue-500 outline-none transition-all font-semibold text-gray-800 shadow-inner">
@@ -67,6 +67,29 @@
                 </div>
                 
                 <button onclick="clearDate()" class="text-xs text-blue-500 font-bold underline ml-1 hover:text-blue-700">ล้างค่าวันที่ (แสดงทั้งหมด)</button>
+            </div>
+
+            <div id="summarySection" class="grid grid-cols-2 gap-4 mb-6 hidden animate-render">
+                <div class="bg-blue-500 rounded-2xl p-4 text-white shadow-lg text-center transform hover:scale-105 transition-transform">
+                    <div class="flex items-center justify-center gap-1 mb-1 opacity-80">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <p class="text-[10px] font-bold uppercase tracking-wider">บิลทั้งหมด</p>
+                    </div>
+                    <p id="totalBills" class="text-3xl font-black">0</p>
+                    <p class="text-[10px] opacity-70">รายการ (Orders)</p>
+                </div>
+                <div class="bg-indigo-500 rounded-2xl p-4 text-white shadow-lg text-center transform hover:scale-105 transition-transform">
+                    <div class="flex items-center justify-center gap-1 mb-1 opacity-80">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                        <p class="text-[10px] font-bold uppercase tracking-wider">ลูกค้า</p>
+                    </div>
+                    <p id="totalPeople" class="text-3xl font-black">0</p>
+                    <p class="text-[10px] opacity-70">คน (Unique)</p>
+                </div>
             </div>
 
             <div id="orderContainer" class="space-y-5">
@@ -152,9 +175,11 @@
             const selectedStore = document.getElementById('storeSelect').value;
             const selectedDate = document.getElementById('dateSelect').value; 
             const container = document.getElementById('orderContainer');
+            const summarySection = document.getElementById('summarySection');
             
             if (!selectedStore) {
                 container.innerHTML = '<p class="text-center text-gray-400 py-10 italic">กรุณาเลือก รหัสร้าน</p>';
+                summarySection.classList.add('hidden'); // ซ่อนสรุปถ้ายังไม่เลือกร้าน
                 return;
             }
 
@@ -177,10 +202,30 @@
                 let msg = 'ไม่พบข้อมูลสำหรับร้านนี้';
                 if (selectedDate) msg += ' ในวันที่เลือก';
                 container.innerHTML = `<p class="text-center text-gray-500 py-10">${msg}</p>`;
+                summarySection.classList.add('hidden'); // ซ่อนสรุปถ้าไม่เจอข้อมูล
                 return;
             }
 
+            // ✅ แสดงส่วนสรุปผล
+            renderSummary(filtered);
             renderCards(filtered, container);
+        }
+
+        // 📊 Function คำนวณยอดรวม (ใหม่)
+        function renderSummary(data) {
+            const summarySection = document.getElementById('summarySection');
+            summarySection.classList.remove('hidden');
+
+            // 1. นับจำนวนบิล (ง่ายๆ คือนับ Array)
+            document.getElementById('totalBills').textContent = data.length.toLocaleString();
+
+            // 2. นับจำนวนคน (ใช้ Set เพื่อนับเฉพาะชื่อที่ไม่ซ้ำ)
+            const uniqueCustomers = new Set(data.map(item => {
+                const key = Object.keys(item).find(k => k.trim() === 'ชื่อผู้สั่ง');
+                return item[key] ? item[key].trim() : null;
+            }).filter(name => name)); // filter เอาค่า null/empty ออก
+
+            document.getElementById('totalPeople').textContent = uniqueCustomers.size.toLocaleString();
         }
 
         function clearDate() {
@@ -201,11 +246,9 @@
         document.getElementById('storeSelect').addEventListener('change', applyFilters);
         document.getElementById('dateSelect').addEventListener('change', applyFilters);
 
-        // 🖼️ RENDER CARDS (Updated with Payment Method)
         function renderCards(data, container) {
             container.innerHTML = "";
             data.forEach(item => {
-                // Helper to get value (Flexible search)
                 const val = (nameOrPartial) => {
                     const key = Object.keys(item).find(k => k.trim().includes(nameOrPartial) || k.trim() === nameOrPartial);
                     return item[key] || '-';
@@ -219,8 +262,7 @@
                     dateDisplay = dateDisplay.split('T')[0];
                 }
 
-                // 🔎 หาข้อมูลการชำระเงิน (ค้นหาคำว่า 'วิธีการจ่ายเงิน' หรือ 'Payment')
-                let paymentMethod = val('วิธีการจ่ายเงิน');
+                let paymentMethod = val('ชำระ');
                 if(paymentMethod === '-') paymentMethod = val('Payment');
 
                 container.innerHTML += `
