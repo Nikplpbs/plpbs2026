@@ -179,7 +179,7 @@
             
             if (!selectedStore) {
                 container.innerHTML = '<p class="text-center text-gray-400 py-10 italic">กรุณาเลือก รหัสร้าน</p>';
-                summarySection.classList.add('hidden'); // ซ่อนสรุปถ้ายังไม่เลือกร้าน
+                summarySection.classList.add('hidden');
                 return;
             }
 
@@ -202,28 +202,24 @@
                 let msg = 'ไม่พบข้อมูลสำหรับร้านนี้';
                 if (selectedDate) msg += ' ในวันที่เลือก';
                 container.innerHTML = `<p class="text-center text-gray-500 py-10">${msg}</p>`;
-                summarySection.classList.add('hidden'); // ซ่อนสรุปถ้าไม่เจอข้อมูล
+                summarySection.classList.add('hidden');
                 return;
             }
 
-            // ✅ แสดงส่วนสรุปผล
             renderSummary(filtered);
             renderCards(filtered, container);
         }
 
-        // 📊 Function คำนวณยอดรวม (ใหม่)
         function renderSummary(data) {
             const summarySection = document.getElementById('summarySection');
             summarySection.classList.remove('hidden');
 
-            // 1. นับจำนวนบิล (ง่ายๆ คือนับ Array)
             document.getElementById('totalBills').textContent = data.length.toLocaleString();
 
-            // 2. นับจำนวนคน (ใช้ Set เพื่อนับเฉพาะชื่อที่ไม่ซ้ำ)
             const uniqueCustomers = new Set(data.map(item => {
                 const key = Object.keys(item).find(k => k.trim() === 'ชื่อผู้สั่ง');
                 return item[key] ? item[key].trim() : null;
-            }).filter(name => name)); // filter เอาค่า null/empty ออก
+            }).filter(name => name));
 
             document.getElementById('totalPeople').textContent = uniqueCustomers.size.toLocaleString();
         }
@@ -262,7 +258,10 @@
                     dateDisplay = dateDisplay.split('T')[0];
                 }
 
-                let paymentMethod = val('ชำระ');
+                // 👇 แก้ไขตรงนี้ตามที่ขอครับ
+                let paymentMethod = val('วิธีการจ่ายเงิน'); 
+                // สำรอง: ถ้าไม่เจอให้หา 'ชำระ' หรือ 'Payment' แทน
+                if(paymentMethod === '-') paymentMethod = val('ชำระ');
                 if(paymentMethod === '-') paymentMethod = val('Payment');
 
                 container.innerHTML += `
