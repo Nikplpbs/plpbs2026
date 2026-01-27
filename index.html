@@ -16,7 +16,6 @@
         .animate-render { animation: fadeIn 0.5s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .date-badge:active { transform: scale(0.95); }
-        /* ซ่อน Scrollbar */
         .hide-scroll::-webkit-scrollbar { display: none; }
         .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
@@ -39,11 +38,11 @@
             <div class="space-y-4">
                 <div>
                     <label class="text-[10px] font-bold text-gray-400 uppercase ml-1 tracking-widest">รหัสร้าน / ID</label>
-                    <input type="text" id="userId" class="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-blue-500 outline-none transition-all font-semibold" placeholder="กรอก ID">
+                    <input type="text" id="userId" class="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-blue-500 outline-none transition-all font-semibold" placeholder="กรอก ID (admin)">
                 </div>
                 <div>
                     <label class="text-[10px] font-bold text-gray-400 uppercase ml-1 tracking-widest">รหัสผ่าน / Password</label>
-                    <input type="password" id="userPass" class="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-blue-500 outline-none transition-all" placeholder="••••••••">
+                    <input type="password" id="userPass" class="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-blue-500 outline-none transition-all" placeholder="•••••••• (admin121)">
                 </div>
                 <button onclick="checkLogin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl shadow-lg transform active:scale-95 transition-all mt-4">
                     เข้าสู่ระบบ
@@ -55,6 +54,10 @@
 
     <!-- MAIN APP -->
     <div id="mainContent">
+        <div id="loadingIndicator" class="fixed top-0 left-0 w-full h-1 bg-blue-200 hidden z-50">
+            <div class="h-full bg-blue-600 animate-pulse w-1/2"></div>
+        </div>
+
         <div class="max-w-md mx-auto px-4 pt-8">
             
             <!-- HEADER -->
@@ -70,6 +73,9 @@
                     </svg>
                 </button>
             </div>
+
+            <!-- STATUS MESSAGE (สำหรับการแจ้งเตือน) -->
+            <div id="statusMessage" class="hidden mb-4 p-4 rounded-2xl text-sm font-bold text-center"></div>
 
             <!-- ================= PAGE 1: รายการบิล (LIST VIEW) ================= -->
             <div id="listViewPage">
@@ -179,6 +185,15 @@
         const API_URL = "https://script.google.com/macros/s/AKfycbyfVJ_4yHqTNOJj2fslLzLmDka8RNB8VYsblv61PmQ7YBBmGafYbhGeGEh23QQUDELL/exec";
         const AUTH_CONFIG = { "plpbs": "1234", "admin": "admin121" };
 
+        // 🟢 MOCK DATA (ใช้เมื่อ API พัง)
+        const MOCK_DATA = [
+            {"รหัสร้าน": "S001", "ชื่อผู้สั่ง": "คุณสมชาย", "ราคาสุทธิ": 1500, "เวลารับสินค้า": "2026-02-15", "หมายเลขออเดอร์": "OD-101", "วิธีการจ่ายเงิน": "เงินสด"},
+            {"รหัสร้าน": "S001", "ชื่อผู้สั่ง": "คุณวิภา", "ราคาสุทธิ": 500, "เวลารับสินค้า": "2026-02-15", "หมายเลขออเดอร์": "OD-102", "วิธีการจ่ายเงิน": "โอนเงิน"},
+            {"รหัสร้าน": "S002", "ชื่อผู้สั่ง": "ร้านป้าแจ๋ว", "ราคาสุทธิ": 3200, "เวลารับสินค้า": "2026-02-16", "หมายเลขออเดอร์": "OD-103", "วิธีการจ่ายเงิน": "เครดิต"},
+            {"รหัสร้าน": "S003", "ชื่อผู้สั่ง": "บริษัท A", "ราคาสุทธิ": 12000, "เวลารับสินค้า": "2026-02-17", "หมายเลขออเดอร์": "OD-104", "วิธีการจ่ายเงิน": "เช็ค"},
+            {"รหัสร้าน": "S001", "ชื่อผู้สั่ง": "คุณนนท์", "ราคาสุทธิ": 450, "เวลารับสินค้า": "2026-02-15", "หมายเลขออเดอร์": "OD-105", "วิธีการจ่ายเงิน": "เงินสด"}
+        ];
+
         // Global State
         let allData = [];
         let myChart = null;
@@ -202,25 +217,71 @@
             }
         }
 
-        // --- DATA ---
+        // --- DATA FETCHING (FIXED) ---
         async function fetchData() {
+            const statusMsg = document.getElementById('statusMessage');
+            const select = document.getElementById('storeSelect');
+            document.getElementById('loadingIndicator').classList.remove('hidden');
+
             try {
-                const response = await fetch(API_URL,);
+                // ลองดึงข้อมูลจาก API
+                const response = await fetch(API_URL, {
+                    method: 'GET',
+                    redirect: 'follow' // สำคัญ: ตาม Redirect ของ Google Script
+                });
+
+                if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
+
                 const text = await response.text();
+                
+                // เช็คว่าเป็น HTML หรือไม่ (ถ้าเป็น HTML แปลว่าติด Login หรือ Error)
+                if (text.trim().startsWith('<')) {
+                    throw new Error("Received HTML instead of JSON (Check GAS Permission)");
+                }
+
                 allData = JSON.parse(text); 
+                showStatus("✅ โหลดข้อมูลสำเร็จ", "bg-green-100 text-green-700");
                 populateDropdown(allData);
+
             } catch (error) {
-                console.error("Fetch Error:", error);
-                document.getElementById('storeSelect').innerHTML = '<option>⚠️ เชื่อมต่อล้มเหลว</option>';
+                console.warn("API Failed, switching to Mock Data:", error);
+                
+                // ใช้ Mock Data แทนเพื่อไม่ให้เว็บพัง
+                allData = MOCK_DATA;
+                
+                showStatus(`⚠️ ไม่สามารถเชื่อมต่อฐานข้อมูลจริงได้ (${error.message}) <br>กำลังแสดงข้อมูลจำลอง`, "bg-yellow-100 text-yellow-800");
+                populateDropdown(allData);
+            } finally {
+                document.getElementById('loadingIndicator').classList.add('hidden');
             }
+        }
+
+        function showStatus(msg, classes) {
+            const statusDiv = document.getElementById('statusMessage');
+            statusDiv.innerHTML = msg;
+            statusDiv.className = `mb-4 p-4 rounded-2xl text-xs font-medium text-center ${classes}`;
+            statusDiv.classList.remove('hidden');
         }
 
         function populateDropdown(data) {
             const select = document.getElementById('storeSelect');
-            const stores = [...new Set(data.map(item => {
-                const key = Object.keys(item).find(k => k.trim() === 'รหัสร้าน');
-                return item[key];
-            }))].filter(s => s).sort();
+            
+            // หา Key ที่น่าจะเป็นรหัสร้าน
+            if (data.length === 0) {
+                select.innerHTML = '<option value="">ไม่พบข้อมูล</option>';
+                return;
+            }
+
+            const sample = data[0];
+            const storeKey = Object.keys(sample).find(k => k.trim().includes('รหัสร้าน') || k.trim().includes('Store'));
+
+            if (!storeKey) {
+                console.error("หาคอลัมน์ 'รหัสร้าน' ไม่เจอ");
+                select.innerHTML = '<option value="">ข้อมูลผิดพลาด (ไม่พบคอลัมน์รหัสร้าน)</option>';
+                return;
+            }
+
+            const stores = [...new Set(data.map(item => item[storeKey]))].filter(s => s).sort();
             
             select.innerHTML = '<option value="">-- เลือก รหัสร้าน --</option>';
             stores.forEach(store => {
@@ -245,11 +306,15 @@
             }
 
             let filtered = allData.filter(item => {
-                const storeKey = Object.keys(item).find(k => k.trim() === 'รหัสร้าน');
-                const matchStore = item[storeKey] == selectedStore;
+                // หา Key แบบ Dynamic
+                const keys = Object.keys(item);
+                const storeKey = keys.find(k => k.trim().includes('รหัสร้าน') || k.trim().includes('Store'));
+                const dateKey = keys.find(k => k.trim().includes('เวลา') || k.trim().includes('Date'));
+
+                const matchStore = String(item[storeKey]) === selectedStore;
                 let matchDate = true;
-                if (selectedDate) {
-                    const dateKey = Object.keys(item).find(k => k.trim() === 'เวลารับสินค้า');
+                
+                if (selectedDate && dateKey) {
                     let rawDate = item[dateKey] || '';
                     if (rawDate.includes('T')) rawDate = rawDate.split('T')[0];
                     matchDate = rawDate === selectedDate;
@@ -272,9 +337,12 @@
         function renderSummary(data) {
             document.getElementById('summarySection').classList.remove('hidden');
             document.getElementById('totalBills').textContent = data.length.toLocaleString();
+            
+            // หา Key ชื่อลูกค้า
+            const nameKey = Object.keys(data[0]).find(k => k.includes('ชื่อ'));
+            
             const uniqueCustomers = new Set(data.map(item => {
-                const key = Object.keys(item).find(k => k.trim() === 'ชื่อผู้สั่ง');
-                return item[key] ? item[key].trim() : null;
+                return item[nameKey] ? String(item[nameKey]).trim() : null;
             }).filter(name => name));
             document.getElementById('totalPeople').textContent = uniqueCustomers.size.toLocaleString();
         }
@@ -287,18 +355,19 @@
                     return item[key] || '-';
                 };
 
-                const formattedPrice = Number(val('ราคาสุทธิ')).toLocaleString();
-                let dateDisplay = val('เวลารับสินค้า');
-                if (dateDisplay !== '-' && dateDisplay.includes('T')) dateDisplay = dateDisplay.split('T')[0];
+                // Helper Safe Number
+                const price = val('ราคา') !== '-' ? val('ราคา') : 0;
+                const formattedPrice = Number(price).toLocaleString();
+                
+                let dateDisplay = val('เวลา');
+                if (dateDisplay !== '-' && String(dateDisplay).includes('T')) dateDisplay = dateDisplay.split('T')[0];
 
-                let orderId = val('หมายเลขออเดอร์');
-                if (orderId === '-') orderId = val('เลขที่');
+                let orderId = val('หมายเลข');
                 if (orderId === '-') orderId = val('Order');
 
-                let customerName = val('ชื่อผู้สั่ง');
-                if (customerName === '-') customerName = val('ชื่อลูกค้า');
+                let customerName = val('ชื่อ');
                 
-                let paymentMethod = val('วิธีการจ่ายเงิน'); 
+                let paymentMethod = val('วิธี'); 
                 if(paymentMethod === '-') paymentMethod = val('ชำระ');
 
                 container.innerHTML += `
@@ -365,8 +434,11 @@
             if (allData.length === 0) return;
 
             const storeCounts = {};
+            // Dynamic Key Finding
+            const sample = allData[0];
+            const storeKey = Object.keys(sample).find(k => k.trim().includes('รหัสร้าน') || k.trim().includes('Store'));
+
             allData.forEach(item => {
-                const storeKey = Object.keys(item).find(k => k.trim() === 'รหัสร้าน');
                 const store = item[storeKey];
                 if (store) storeCounts[store] = (storeCounts[store] || 0) + 1;
             });
