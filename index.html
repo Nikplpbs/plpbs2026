@@ -100,6 +100,23 @@
             <!-- STATUS MESSAGE -->
             <div id="statusMessage" class="hidden mb-4 p-4 rounded-2xl text-sm font-bold text-center shadow-sm"></div>
 
+            <!-- GLOBAL MONTH FILTER -->
+            <div class="bg-white rounded-3xl p-4 shadow-sm mb-6 border border-gray-100 flex items-center justify-between animate-render">
+                <div class="flex items-center gap-3 w-full">
+                    <div class="bg-blue-50 p-2.5 rounded-xl text-blue-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">ตัวกรองเดือน (ภาพรวม/สาขา)</p>
+                        <select id="globalMonthSelect" onchange="handleGlobalMonthChange()" class="w-full bg-transparent font-bold text-gray-800 text-sm outline-none appearance-none cursor-pointer">
+                            <option value="">กำลังโหลดข้อมูล...</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
             <!-- ================= PAGE 1: รายการบิล ================= -->
             <div id="listViewPage">
                 
@@ -132,13 +149,21 @@
                         </div>
                     </div>
 
-                    <!-- Common Date Filter -->
-                    <div>
-                        <label class="block text-gray-400 text-[10px] font-bold uppercase mb-2 ml-1 tracking-widest">เลือกวันที่</label>
-                        <input type="date" id="dateSelect" class="block w-full text-lg p-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-blue-500 outline-none transition-all font-medium text-gray-800 shadow-inner">
+                    <!-- Common Date Range Filter -->
+                    <div class="mt-2">
+                        <label class="block text-gray-400 text-[10px] font-bold uppercase mb-3 ml-1 tracking-widest">ช่วงวันที่สั่งซื้อ</label>
+                        <div class="flex gap-2 mb-2">
+                            <div class="flex-1 border-2 border-gray-100 rounded-2xl relative px-3 py-2 bg-gray-50 focus-within:border-blue-500 focus-within:bg-white transition-all">
+                                <label class="absolute -top-2.5 left-3 bg-white px-1 text-[10px] text-gray-500 font-bold uppercase tracking-wider">ตั้งแต่</label>
+                                <input type="date" id="listStartDate" onchange="applyFilters()" class="w-full outline-none bg-transparent text-sm text-gray-700 mt-1 cursor-pointer font-medium">
+                            </div>
+                            <div class="flex-1 border-2 border-gray-100 rounded-2xl relative px-3 py-2 bg-gray-50 focus-within:border-blue-500 focus-within:bg-white transition-all">
+                                <label class="absolute -top-2.5 left-3 bg-white px-1 text-[10px] text-gray-500 font-bold uppercase tracking-wider">ถึง</label>
+                                <input type="date" id="listEndDate" onchange="applyFilters()" class="w-full outline-none bg-transparent text-sm text-gray-700 mt-1 cursor-pointer font-medium">
+                            </div>
+                        </div>
+                        <button onclick="clearDate()" class="text-xs text-blue-500 font-bold underline ml-1 hover:text-blue-700">ล้างค่าวันที่ (แสดงทั้งหมด)</button>
                     </div>
-                    
-                    <button onclick="clearDate()" class="text-xs text-blue-500 font-bold underline ml-1 hover:text-blue-700">ล้างค่าวันที่ (แสดงทั้งหมด)</button>
                 </div>
 
                 <!-- RESULTS -->
@@ -156,6 +181,16 @@
                         </div>
                         <p id="totalPeople" class="text-3xl font-black tracking-tight">0</p>
                         <p class="text-[10px] opacity-70">คน (Unique)</p>
+                    </div>
+                </div>
+
+                <!-- CUSTOMER LEADERBOARD -->
+                <div id="customerRankingSection" class="bg-white rounded-3xl p-5 shadow-sm border border-gray-100 mb-6 hidden animate-render">
+                    <h3 class="text-sm font-bold text-gray-800 mb-3 flex items-center gap-2">
+                        <span class="text-lg">🏆</span> ลูกค้าประจำสาขานี้
+                    </h3>
+                    <div id="customerRankingList" class="space-y-2 max-h-64 overflow-y-auto pr-2 hide-scroll">
+                        <!-- JS injects top customers here -->
                     </div>
                 </div>
 
@@ -180,6 +215,7 @@
                     กลับไปหน้ารายการ
                 </button>
 
+                <!-- 📊 Chart 1: Store Issues -->
                 <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 mb-6">
                     <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -189,6 +225,37 @@
                     </h2>
                     <div class="relative h-64 w-full">
                         <canvas id="storeChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- 📊 Chart 2: Day of Week Analysis -->
+                <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 mb-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-lg font-bold text-gray-800 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            ความหนาแน่นรายวัน
+                        </h2>
+                        <span id="bestDayBadge" class="bg-indigo-50 text-indigo-700 text-[10px] font-bold px-2 py-1 rounded-lg border border-indigo-200 hidden shadow-sm whitespace-nowrap">
+                            Peak: -
+                        </span>
+                    </div>
+
+                    <!-- Date Range Filter -->
+                    <div class="flex gap-2 mb-4">
+                        <div class="flex-1 border border-gray-300 rounded-lg relative px-3 py-2 bg-white focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500 transition-all">
+                            <label class="absolute -top-2.5 left-2 bg-white px-1 text-[11px] text-gray-500 font-medium">วันที่สั่ง จาก</label>
+                            <input type="date" id="overviewStartDate" onchange="renderOverview()" class="w-full outline-none bg-transparent text-sm text-gray-700 mt-0.5 cursor-pointer">
+                        </div>
+                        <div class="flex-1 border border-gray-300 rounded-lg relative px-3 py-2 bg-white focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500 transition-all">
+                            <label class="absolute -top-2.5 left-2 bg-white px-1 text-[11px] text-gray-500 font-medium">ถึง</label>
+                            <input type="date" id="overviewEndDate" onchange="renderOverview()" class="w-full outline-none bg-transparent text-sm text-gray-700 mt-0.5 cursor-pointer">
+                        </div>
+                    </div>
+
+                    <div class="relative h-48 w-full">
+                        <canvas id="dayOfWeekChart"></canvas>
                     </div>
                 </div>
 
@@ -231,11 +298,62 @@
         
         // ⭐ ร้านที่ต้องการติดดาวพิเศษ
         const STARRED_STORES = ["5605", "18232"];
+        const THAI_MONTHS = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
 
         let allData = [];
         let myChart = null;
+        let dowChart = null; // เพิ่มตัวแปรเก็บกราฟรายวัน
         let currentMode = 'general'; 
         let currentSelectedStore = '';
+        let currentGlobalMonth = '';
+
+        // --- UTILITIES ---
+        function extractYearMonth(raw) {
+            if (!raw) return null;
+            if (raw.includes('T')) return raw.split('T')[0].substring(0, 7);
+            const parts = raw.split('-');
+            if (parts.length >= 2 && parts[0].length === 4) return `${parts[0]}-${parts[1]}`;
+            const d = new Date(raw);
+            if (!isNaN(d.getTime())) {
+                const m = String(d.getMonth() + 1).padStart(2, '0');
+                return `${d.getFullYear()}-${m}`;
+            }
+            return null;
+        }
+
+        function populateGlobalMonth(data) {
+            const select = document.getElementById('globalMonthSelect');
+            if (!data.length) return;
+            
+            const dateKey = Object.keys(data[0]).find(k => k.trim().includes('เวลา') || k.trim().includes('Date'));
+            if (!dateKey) return;
+
+            let monthsSet = new Set();
+            data.forEach(item => {
+                let ym = extractYearMonth(item[dateKey]);
+                if (ym) monthsSet.add(ym);
+            });
+
+            let monthsArr = Array.from(monthsSet).sort().reverse();
+            select.innerHTML = '<option value="">ภาพรวมทั้งหมด (ทุกเดือน)</option>';
+            
+            monthsArr.forEach(ym => {
+                const [year, month] = ym.split('-');
+                const monthName = THAI_MONTHS[parseInt(month) - 1];
+                const option = document.createElement('option');
+                option.value = ym;
+                option.textContent = `${monthName} ${year}`;
+                select.appendChild(option);
+            });
+        }
+
+        function handleGlobalMonthChange() {
+            currentGlobalMonth = document.getElementById('globalMonthSelect').value;
+            applyFilters();
+            if(!document.getElementById('overviewPage').classList.contains('hidden')) {
+                renderOverview();
+            }
+        }
 
         // --- AUTH ---
         function checkLogin() {
@@ -268,6 +386,7 @@
                 if (allData.length > 0) {
                     populateDropdown(allData);
                     renderTargetButtons();
+                    populateGlobalMonth(allData);
                     document.getElementById('statusMessage').innerHTML = "✅ โหลดข้อมูลสำเร็จ";
                     document.getElementById('statusMessage').className = "mb-4 p-4 rounded-2xl text-xs font-medium text-center bg-green-100 text-green-700 border border-green-200";
                     document.getElementById('statusMessage').classList.remove('hidden');
@@ -374,9 +493,11 @@
                 selectedStore = currentSelectedStore;
             }
 
-            const selectedDate = document.getElementById('dateSelect').value;
+            const startDateStr = document.getElementById('listStartDate').value;
+            const endDateStr = document.getElementById('listEndDate').value;
             const container = document.getElementById('orderContainer');
             const summarySection = document.getElementById('summarySection');
+            const customerSection = document.getElementById('customerRankingSection');
 
             if (!selectedStore) {
                 container.innerHTML = `
@@ -389,6 +510,7 @@
                         <p class="text-gray-400 italic">กรุณาเลือกสาขา</p>
                     </div>`;
                 summarySection.classList.add('hidden');
+                if(customerSection) customerSection.classList.add('hidden');
                 return;
             }
 
@@ -398,13 +520,22 @@
                 const dateKey = keys.find(k => k.trim().includes('เวลา') || k.trim().includes('Date'));
 
                 const matchStore = String(item[storeKey]) === selectedStore;
+                
                 let matchDate = true;
-                if (selectedDate && dateKey) {
+                if (dateKey && (startDateStr || endDateStr)) {
                     let rawDate = item[dateKey] || '';
                     if (rawDate.includes('T')) rawDate = rawDate.split('T')[0];
-                    matchDate = rawDate === selectedDate;
+                    if (startDateStr && rawDate < startDateStr) matchDate = false;
+                    if (endDateStr && rawDate > endDateStr) matchDate = false;
                 }
-                return matchStore && matchDate;
+                
+                let matchGlobalMonth = true;
+                if (currentGlobalMonth && dateKey) {
+                    let ym = extractYearMonth(item[dateKey]);
+                    if (ym) matchGlobalMonth = ym === currentGlobalMonth;
+                }
+
+                return matchStore && matchDate && matchGlobalMonth;
             });
 
             if (filtered.length === 0) {
@@ -413,10 +544,12 @@
                         <p class="text-gray-400 italic">ไม่พบข้อมูล</p>
                     </div>`;
                 summarySection.classList.add('hidden');
+                if(customerSection) customerSection.classList.add('hidden');
                 return;
             }
 
             renderSummary(filtered);
+            renderCustomerRanking(filtered);
             renderCards(filtered, container);
             
             if(currentMode === 'target') {
@@ -430,6 +563,55 @@
             const nameKey = Object.keys(data[0]).find(k => k.includes('ชื่อ'));
             const unique = new Set(data.map(i => i[nameKey])).size;
             document.getElementById('totalPeople').textContent = unique.toLocaleString();
+        }
+
+        function renderCustomerRanking(data) {
+            const customerSection = document.getElementById('customerRankingSection');
+            const listContainer = document.getElementById('customerRankingList');
+            const nameKey = Object.keys(data[0]).find(k => k.includes('ชื่อ'));
+            
+            if (!nameKey) {
+                customerSection.classList.add('hidden');
+                return;
+            }
+
+            let counts = {};
+            data.forEach(item => {
+                let name = item[nameKey];
+                if (!name || name === '-') name = 'ไม่ระบุชื่อ';
+                counts[name] = (counts[name] || 0) + 1;
+            });
+
+            // จัดเรียงตามความถี่มากสุด 10 อันดับแรก
+            const sortedCust = Object.entries(counts)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 10);
+
+            if (sortedCust.length === 0) {
+                customerSection.classList.add('hidden');
+                return;
+            }
+
+            listContainer.innerHTML = sortedCust.map((c, i) => {
+                let badge = 'bg-gray-100 text-gray-600';
+                if (i === 0) badge = 'bg-yellow-100 text-yellow-700 border border-yellow-300';
+                else if (i === 1) badge = 'bg-gray-200 text-gray-700';
+                else if (i === 2) badge = 'bg-orange-100 text-orange-700';
+
+                return `
+                <div class="flex justify-between items-center p-3 rounded-xl hover:bg-gray-50 transition-colors border-b border-gray-50 last:border-0">
+                    <div class="flex items-center gap-3">
+                        <div class="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold ${badge}">${i+1}</div>
+                        <span class="text-sm font-bold text-gray-700">${c[0]}</span>
+                    </div>
+                    <div class="text-[10px] font-bold bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg border border-blue-100 shadow-sm">
+                        สั่ง ${c[1]} ครั้ง
+                    </div>
+                </div>
+                `;
+            }).join('');
+            
+            customerSection.classList.remove('hidden');
         }
 
         function renderCards(data, container) {
@@ -506,11 +688,13 @@
         }
 
         function clearDate() {
-            document.getElementById('dateSelect').value = '';
+            document.getElementById('listStartDate').value = '';
+            document.getElementById('listEndDate').value = '';
             applyFilters();
         }
         function selectDate(d) {
-            document.getElementById('dateSelect').value = d;
+            document.getElementById('listStartDate').value = d;
+            document.getElementById('listEndDate').value = d;
             applyFilters();
             document.getElementById('filterSection').scrollIntoView({behavior: 'smooth'});
         }
@@ -531,11 +715,49 @@
 
         function renderOverview() {
             if (allData.length === 0) return;
-            const counts = {};
-            const sample = allData[0];
-            const storeKey = Object.keys(sample).find(k => k.includes('รหัสร้าน'));
             
-            allData.forEach(i => {
+            const startDateStr = document.getElementById('overviewStartDate')?.value;
+            const endDateStr = document.getElementById('overviewEndDate')?.value;
+
+            const baseSample = allData[0];
+            const dateKey = Object.keys(baseSample).find(k => k.trim().includes('เวลา') || k.trim().includes('Date'));
+            const storeKey = Object.keys(baseSample).find(k => k.trim().includes('รหัสร้าน') || k.trim().includes('Store'));
+
+            // กรองข้อมูลตามเดือนและช่วงวันที่สำหรับกราฟและตารางภาพรวม
+            let dataToProcess = allData;
+            
+            if (dateKey) {
+                dataToProcess = allData.filter(item => {
+                    let rawDate = item[dateKey] || '';
+                    if (rawDate.includes('T')) rawDate = rawDate.split('T')[0];
+                    
+                    let matchGlobalMonth = true;
+                    if (currentGlobalMonth) {
+                        let ym = extractYearMonth(item[dateKey]);
+                        matchGlobalMonth = (ym === currentGlobalMonth);
+                    }
+
+                    let matchDateRange = true;
+                    if (startDateStr || endDateStr) {
+                        if (startDateStr && rawDate < startDateStr) matchDateRange = false;
+                        if (endDateStr && rawDate > endDateStr) matchDateRange = false;
+                    }
+
+                    return matchGlobalMonth && matchDateRange;
+                });
+            }
+
+            if (dataToProcess.length === 0) {
+                if (myChart) myChart.destroy();
+                if (dowChart) dowChart.destroy();
+                document.getElementById('rankingTableBody').innerHTML = '<tr><td colspan="3" class="text-center py-8 text-gray-400 font-bold italic">ไม่พบข้อมูลในช่วงเวลานี้</td></tr>';
+                return;
+            }
+
+            const counts = {};
+            
+            // --- 1. วิเคราะห์ข้อมูลสาขา ---
+            dataToProcess.forEach(i => {
                 const s = i[storeKey];
                 if(s) counts[s] = (counts[s] || 0) + 1;
             });
@@ -543,7 +765,7 @@
             const data = Object.entries(counts).map(([store, count]) => ({store, count}))
                 .sort((a,b) => b.count - a.count);
                 
-            // Render Chart
+            // Render Store Chart
             const chartData = data.slice(0, 15);
             if (myChart) myChart.destroy();
             const ctx = document.getElementById('storeChart').getContext('2d');
@@ -560,6 +782,68 @@
                 },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: {display: false} } }
             });
+
+            // --- 2. วิเคราะห์ข้อมูลวันในสัปดาห์ (จันทร์ - อาทิตย์) ---
+            if (dateKey) {
+                const dowCounts = [0, 0, 0, 0, 0, 0, 0]; // อาทิตย์ = 0, จันทร์ = 1, ...
+                const THAI_DOW_FULL = ["อาทิตย์", "จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์"];
+                const THAI_DOW_SHORT = ["อา.", "จ.", "อ.", "พ.", "พฤ.", "ศ.", "ส."];
+
+                dataToProcess.forEach(item => {
+                    let rawDate = item[dateKey];
+                    if (rawDate) {
+                        let d = new Date(rawDate);
+                        if (!isNaN(d.getTime())) {
+                            dowCounts[d.getDay()]++;
+                        }
+                    }
+                });
+
+                // หาวันที่ยอดสูงที่สุด
+                let maxDowVal = -1;
+                let bestDowIdx = -1;
+                dowCounts.forEach((val, idx) => {
+                    if (val > maxDowVal) {
+                        maxDowVal = val;
+                        bestDowIdx = idx;
+                    }
+                });
+
+                if (bestDowIdx !== -1 && maxDowVal > 0) {
+                    document.getElementById('bestDayBadge').textContent = `🔥 Peak: ${THAI_DOW_SHORT[bestDowIdx]} (${maxDowVal})`;
+                    document.getElementById('bestDayBadge').classList.remove('hidden');
+                } else {
+                    document.getElementById('bestDayBadge').classList.add('hidden');
+                }
+
+                // Render Day of Week Chart
+                if (dowChart) dowChart.destroy();
+                const ctxDow = document.getElementById('dayOfWeekChart').getContext('2d');
+                
+                // ไฮไลต์สีแท่งกราฟของวันที่สูงที่สุดให้เด่นขึ้น
+                const bgColors = dowCounts.map((val, idx) => 
+                    idx === bestDowIdx ? '#4f46e5' : '#c7d2fe' // สีเข้ม (Indigo-600) สำหรับวันสูงสุด, สีอ่อนสำหรับวันอื่น
+                );
+
+                dowChart = new Chart(ctxDow, {
+                    type: 'bar',
+                    data: {
+                        labels: THAI_DOW_SHORT,
+                        datasets: [{
+                            label: 'รายการ',
+                            data: dowCounts,
+                            backgroundColor: bgColors,
+                            borderRadius: 6
+                        }]
+                    },
+                    options: { 
+                        responsive: true, 
+                        maintainAspectRatio: false, 
+                        plugins: { legend: {display: false} },
+                        scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } // ให้แกน y เป็นจำนวนเต็ม
+                    }
+                });
+            }
 
             // Render Ranking Table
             const tbody = document.getElementById('rankingTableBody');
@@ -595,7 +879,6 @@
         // Enter Login
         document.getElementById('userPass').addEventListener('keypress', (e) => { if (e.key === 'Enter') checkLogin(); });
         document.getElementById('storeSelect').addEventListener('change', () => { currentMode = 'general'; applyFilters(); });
-        document.getElementById('dateSelect').addEventListener('change', applyFilters);
 
     </script>
 </body>
