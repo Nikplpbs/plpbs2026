@@ -212,41 +212,42 @@
          MONTHLY SUMMARY CARD  (shows when month selected)
     ══════════════════════════════════════════ -->
     <div id="monthlySummaryCard" class="hidden mb-6">
-        <div class="bg-gradient-to-br from-slate-700 to-slate-900 rounded-3xl p-5 text-white shadow-lg">
-            <div class="flex items-center justify-between mb-4">
+        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+            <!-- Card header strip -->
+            <div class="bg-gradient-to-r from-blue-600 to-blue-500 px-5 py-3 flex items-center justify-between">
                 <div>
-                    <p class="text-[10px] font-bold opacity-60 uppercase tracking-widest">สรุปภาพรวม</p>
-                    <p id="msc_title" class="text-lg font-bold mt-0.5">—</p>
+                    <p class="text-[10px] font-bold text-blue-100 uppercase tracking-widest">สรุปภาพรวม</p>
+                    <p id="msc_title" class="text-base font-bold text-white mt-0.5">—</p>
                 </div>
-                <div class="bg-white/10 p-2 rounded-xl">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div class="bg-white/20 p-2 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
                     </svg>
                 </div>
             </div>
 
             <!-- Stats row -->
-            <div class="grid grid-cols-3 gap-3 mb-4">
-                <div class="bg-white/10 rounded-2xl p-3 text-center">
-                    <p class="text-[10px] opacity-60 uppercase mb-1">รายการ</p>
-                    <p id="msc_orders" class="text-2xl font-black">0</p>
+            <div class="grid grid-cols-3 divide-x divide-gray-100 border-b border-gray-100">
+                <div class="p-4 text-center">
+                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">รายการ</p>
+                    <p id="msc_orders" class="text-2xl font-black text-blue-600">0</p>
                 </div>
-                <div class="bg-white/10 rounded-2xl p-3 text-center">
-                    <p class="text-[10px] opacity-60 uppercase mb-1">ลูกค้า</p>
-                    <p id="msc_customers" class="text-2xl font-black">0</p>
+                <div class="p-4 text-center">
+                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">ลูกค้า</p>
+                    <p id="msc_customers" class="text-2xl font-black text-violet-600">0</p>
                 </div>
-                <div class="bg-white/10 rounded-2xl p-3 text-center">
-                    <p class="text-[10px] opacity-60 uppercase mb-1">สาขา</p>
-                    <p id="msc_stores" class="text-2xl font-black">0</p>
+                <div class="p-4 text-center">
+                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">สาขา</p>
+                    <p id="msc_stores" class="text-2xl font-black text-emerald-600">0</p>
                 </div>
             </div>
 
             <!-- vs prev month -->
-            <div class="bg-white/10 rounded-2xl px-4 py-3 flex items-center justify-between">
-                <span class="text-xs opacity-70">เทียบเดือนก่อน</span>
+            <div class="px-5 py-3 flex items-center justify-between bg-gray-50">
+                <span class="text-xs font-medium text-gray-500">เทียบเดือนก่อน</span>
                 <div class="flex items-center gap-2">
-                    <span id="msc_trend_icon" class="text-lg">—</span>
-                    <span id="msc_trend_text" class="text-sm font-bold">—</span>
+                    <span id="msc_trend_icon" class="text-base leading-none">—</span>
+                    <span id="msc_trend_text" class="text-sm font-bold text-gray-700">—</span>
                 </div>
             </div>
         </div>
@@ -395,7 +396,7 @@
 
 <script>
 // ═══════════════════ CONFIG ═══════════════════
-const API_URL     = "https://script.google.com/macros/s/AKfycbwQxp0eL8IgjmwbqIm39d6Is_ZdPcAYkqK8FTDIrCgnK9LRHBm_9bsW35KQItOEC9c/exec";
+const API_URL     = "https://script.google.com/macros/s/AKfycbwu3GOfvNqBLrzi5AXOtTZ8ukqKoqkJezkXdxvsaOu9MDEle79o2gjZlBoeAX12cFIo/exec";
 const AUTH_CONFIG = {"plpbs":"121234"};
 const TARGET_STORES  = ["5552","5605","9687","13401","13544","15100","16070","16864","17196","18232","18562","18645","18813","19243"];
 const STARRED_STORES = ["5605","18232"];
@@ -525,22 +526,51 @@ function setDataStatus(state, text) {
     if (lbl) lbl.textContent = text;
 }
 
+// ── JSONP loader (ข้าม CORS redirect ของ Google Apps Script) ──
+function loadJSONP(url, timeout = 15000) {
+    return new Promise((resolve, reject) => {
+        const cb   = '__cb_' + Math.random().toString(36).slice(2);
+        const el   = document.createElement('script');
+        let done   = false;
+
+        const tid = setTimeout(() => {
+            if (done) return;
+            done = true; cleanup();
+            reject(new Error('Timeout — Apps Script ตอบช้าหรือ URL ผิด'));
+        }, timeout);
+
+        window[cb] = data => {
+            if (done) return;
+            done = true; cleanup();
+            resolve(data);
+        };
+
+        el.onerror = () => {
+            if (done) return;
+            done = true; cleanup();
+            reject(new Error('โหลดข้อมูลไม่ได้ — ตรวจสอบ Deploy permission (Anyone)'));
+        };
+
+        function cleanup() {
+            clearTimeout(tid);
+            el.remove();
+            delete window[cb];
+        }
+
+        el.src = url + '?callback=' + cb;
+        document.head.appendChild(el);
+    });
+}
+
 async function fetchData() {
     setDataStatus('ds-loading', 'กำลังโหลดข้อมูล...');
     progress(20);
     try {
         progress(50);
-        const res = await fetch(API_URL, { redirect: 'follow' });
-        const text = await res.text();
-
-        if (!text || text.trim() === '')
-            throw new Error('ได้รับข้อมูลว่างเปล่าจาก Sheet');
-        if (text.trim().startsWith('<'))
-            throw new Error('API ตอบกลับ HTML — ตรวจสอบ Deploy: Who has access = Anyone');
-
+        const data = await loadJSONP(API_URL);
         progress(80);
-        const parsed = JSON.parse(text);
-        allData = Array.isArray(parsed) ? parsed : (parsed.data || []);
+
+        allData = Array.isArray(data) ? data : (data.data || []);
 
         if (allData.length > 0) {
             populateDropdown(allData);
