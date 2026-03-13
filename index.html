@@ -517,11 +517,12 @@ function checkLogin() {
 // ═══════════════════ FETCH ═══════════════════
 function setDataStatus(state, text) {
     const pill = document.getElementById('dataStatusPill');
+    if (!pill) return;
     const dot  = pill.querySelector('.ds-dot');
     const lbl  = document.getElementById('dataStatusText');
     pill.className = 'dataStatusPill ' + state;
-    dot.className  = 'ds-dot' + (state==='ds-loading' ? ' pulse' : '');
-    lbl.textContent = text;
+    if (dot) dot.className = 'ds-dot' + (state==='ds-loading' ? ' pulse' : '');
+    if (lbl) lbl.textContent = text;
 }
 
 async function fetchData() {
@@ -529,12 +530,18 @@ async function fetchData() {
     progress(20);
     try {
         progress(50);
-        const res  = await fetch(API_URL, {redirect:'follow'});
-        if (!res.ok) throw new Error('Network error ' + res.status);
+        const res = await fetch(API_URL, { redirect: 'follow' });
         const text = await res.text();
-        if (text.startsWith('<')) throw new Error('API ตอบกลับ HTML — ตรวจสอบ deploy');
+
+        if (!text || text.trim() === '')
+            throw new Error('ได้รับข้อมูลว่างเปล่าจาก Sheet');
+        if (text.trim().startsWith('<'))
+            throw new Error('API ตอบกลับ HTML — ตรวจสอบ Deploy: Who has access = Anyone');
+
         progress(80);
-        allData = JSON.parse(text);
+        const parsed = JSON.parse(text);
+        allData = Array.isArray(parsed) ? parsed : (parsed.data || []);
+
         if (allData.length > 0) {
             populateDropdown(allData);
             renderTargetButtons();
@@ -545,19 +552,20 @@ async function fetchData() {
         } else {
             progress(100, true);
             setDataStatus('ds-error', '⚠ ไม่พบข้อมูลใน Sheet');
-            showStatus('⚠️ ไม่พบข้อมูล', 'info');
+            showStatus('⚠️ Sheet ว่างเปล่า หรือ column ไม่ตรง', 'info');
         }
     } catch(err) {
         progress(100, true);
-        setDataStatus('ds-error', '✕ เชื่อมต่อไม่ได้: ' + err.message);
-        showStatus(`❌ เกิดข้อผิดพลาด: ${err.message}`, 'error');
+        const msg = err.message || String(err);
+        setDataStatus('ds-error', '✕ ' + msg.slice(0,60));
+        showStatus('❌ ' + msg, 'error');
         console.error('[fetchData]', err);
     }
 }
 
 // ═══════════════════ MONTH PILLS ═══════════════════
 function buildMonthPills(data) {
-    const dateKey = getKey(data[0], ['เวลา','Date']);
+    const dateKey = getKey(data[0], ['วันที่สั่ง','วันที่','เวลา','Date']);
     if (!dateKey) return;
     const set = new Set(data.map(d => extractYM(d[dateKey])).filter(Boolean));
     allMonths = [...set].sort().reverse();   // newest first
@@ -628,9 +636,9 @@ function updateMonthlySummaryCard() {
     }
 
     const sample   = allData[0];
-    const dateKey  = getKey(sample, ['เวลา','Date']);
+    const dateKey  = getKey(sample, ['วันที่สั่ง','วันที่','เวลา','Date']);
     const storeKey = getKey(sample, ['รหัสร้าน','Store']);
-    const nameKey  = getKey(sample, ['ชื่อ']);
+    const nameKey  = getKey(sample, ['ชื่อผู้สั่ง','ชื่อ','Name']);
 
     // Current month data
     const cur = allData.filter(d => extractYM(d[dateKey]) === currentMonth);
@@ -735,7 +743,7 @@ function applyFilters() {
     setTimeout(()=>{
         const s = allData[0] || {};
         const storeKey = getKey(s, ['รหัสร้าน','Store']);
-        const dateKey  = getKey(s, ['เวลา','Date']);
+        const dateKey  = getKey(s, ['วันที่สั่ง','วันที่','เวลา','Date']);
         const start = DOM.listStart.value, end = DOM.listEnd.value;
 
         const filtered = allData.filter(item=>{
@@ -763,14 +771,14 @@ function applyFilters() {
 }
 
 function renderSummary(data) {
-    const nameKey = getKey(data[0], ['ชื่อ']);
+    const nameKey = getKey(data[0], ['ชื่อผู้สั่ง','ชื่อ','Name']);
     DOM.summarySection.classList.remove('hidden');
     DOM.totalBills.textContent  = data.length.toLocaleString();
     DOM.totalPeople.textContent = new Set(data.map(i=>i[nameKey])).size.toLocaleString();
 }
 
 function renderCustomerRanking(data) {
-    const nameKey = getKey(data[0], ['ชื่อ']);
+    const nameKey = getKey(data[0], ['ชื่อผู้สั่ง','ชื่อ','Name']);
     if (!nameKey) { DOM.custSection.classList.add('hidden'); return; }
     const counts = {};
     data.forEach(item=>{ const n=item[nameKey]||'ไม่ระบุชื่อ'; counts[n]=(counts[n]||0)+1; });
@@ -790,11 +798,11 @@ function renderCustomerRanking(data) {
 
 function renderCards(data) {
     const s = data[0];
-    const idKey    = getKey(s, ['หมายเลข']);
-    const dateKey  = getKey(s, ['เวลา','Date']);
-    const priceKey = getKey(s, ['ราคา']);
-    const nameKey  = getKey(s, ['ชื่อ']);
-    const payKey   = getKey(s, ['ชำระ','จ่าย','Payment']);
+    const idKey    = getKey(s, ['หมายเลขออเดอร์','หมายเลข','Order']);
+    const dateKey  = getKey(s, ['วันที่สั่ง','วันที่','เวลา','Date']);
+    const priceKey = getKey(s, ['ราคาสุทธิ','ราคารวม','ราคา','Price']);
+    const nameKey  = getKey(s, ['ชื่อผู้สั่ง','ชื่อ','Name']);
+    const payKey   = getKey(s, ['วิธีการจ่ายเงิน','ชำระ','จ่าย','Payment']);
 
     const sorted = [...data].sort((a,b)=>String(a[idKey]||'').localeCompare(String(b[idKey]||'')));
     DOM.orderContainer.innerHTML = sorted.map((item,idx)=>{
@@ -870,7 +878,7 @@ function toggleOverview() {
 function renderOverview() {
     if (!allData.length) return;
     const sample   = allData[0];
-    const dateKey  = getKey(sample, ['เวลา','Date']);
+    const dateKey  = getKey(sample, ['วันที่สั่ง','วันที่','เวลา','Date']);
     const storeKey = getKey(sample, ['รหัสร้าน','Store']);
     const ovStart  = DOM.ovStart?.value, ovEnd = DOM.ovEnd?.value;
 
