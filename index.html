@@ -10,79 +10,40 @@
         *,*::before,*::after{box-sizing:border-box}
         body{font-family:'Sarabun',sans-serif;background:#f1f5f9;-webkit-tap-highlight-color:transparent;font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
 
-        /* Login */
         #loginGate{transition:opacity 0.4s ease}
         @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
         .shake{animation:shake 0.45s ease}
 
-        /* Progress Bar */
         #progressBar{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,#3b82f6,#818cf8);width:0%;z-index:9999;transition:width 0.3s ease,opacity 0.4s ease;border-radius:0 2px 2px 0;box-shadow:0 0 8px rgba(59,130,246,.6)}
 
-        /* Main Content */
         #mainContent{display:none;opacity:0;transition:opacity 0.4s ease}
         #mainContent.visible{opacity:1}
         .page{transition:opacity 0.25s ease,transform 0.25s ease}
         .page.hidden{display:none!important}
 
-        /* Animations */
         @keyframes cardIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
         .card-animate{animation:cardIn 0.35s ease both}
 
-        /* Tabs */
         .tab-btn{transition:color .2s,border-color .2s,opacity .2s;border-bottom:3px solid transparent;opacity:.5}
         .tab-btn.active{border-bottom-color:#2563eb;color:#2563eb;opacity:1;font-weight:700}
 
-        /* UI Elements */
-        .date-pill-trigger { cursor: pointer; transition: all 0.2s; }
-        .date-pill-trigger:active { transform: scale(0.97); }
-        .cash-highlight { border-left: 4px solid #ef4444; background-color: #fef2f2; }
-        
-        .pro-image {
-            width: 100%;
-            border-radius: 1.5rem;
-            object-fit: cover;
-            background: #f1f5f9;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            min-height: 200px;
-        }
+        .date-pill-trigger{cursor:pointer;transition:all 0.2s}
+        .date-pill-trigger:active{transform:scale(0.97)}
+        .cash-highlight{border-left:4px solid #ef4444;background-color:#fef2f2}
+
+        .pro-image{width:100%;border-radius:1.5rem;object-fit:cover;background:#f1f5f9;box-shadow:0 4px 12px rgba(0,0,0,0.05);min-height:200px}
 
         .hide-scroll::-webkit-scrollbar{display:none}
         .hide-scroll{-ms-overflow-style:none;scrollbar-width:none}
-        
-        /* Date Picker Fix */
-        input[type="date"]::-webkit-calendar-picker-indicator {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            cursor: pointer;
-        }
 
-        /* ข้อความโปรโมชั่น: สีขาว เค้าโครงสีแดง */
-        .text-outline-red {
-            color: #ffffff;
-            font-weight: 800;
-            text-shadow: 
-                -1.5px -1.5px 0 #dc2626,
-                 0     -1.5px 0 #dc2626,
-                 1.5px -1.5px 0 #dc2626,
-                 1.5px  0     0 #dc2626,
-                 1.5px  1.5px 0 #dc2626,
-                 0      1.5px 0 #dc2626,
-                -1.5px  1.5px 0 #dc2626,
-                -1.5px  0     0 #dc2626,
-                 0px    2px   2px rgba(0,0,0,0.25);
-        }
+        input[type="date"]::-webkit-calendar-picker-indicator{position:absolute;top:0;left:0;right:0;bottom:0;width:100%;height:100%;opacity:0;cursor:pointer}
+
+        .text-outline-red{color:#ffffff;font-weight:800;text-shadow:-1.5px -1.5px 0 #dc2626,0 -1.5px 0 #dc2626,1.5px -1.5px 0 #dc2626,1.5px 0 0 #dc2626,1.5px 1.5px 0 #dc2626,0 1.5px 0 #dc2626,-1.5px 1.5px 0 #dc2626,-1.5px 0 0 #dc2626,0px 2px 2px rgba(0,0,0,0.25)}
     </style>
 </head>
 <body class="pb-16 text-slate-800">
 
 <div id="progressBar"></div>
-<div id="toast"></div>
 
 <!-- ══════════════════════ LOGIN ══════════════════════ -->
 <div id="loginGate" class="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-slate-100 to-blue-50 px-6">
@@ -100,7 +61,7 @@
                 <div class="relative mt-1">
                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                         <svg class="h-5 w-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
                         </svg>
                     </div>
                     <input type="text" id="userId" autocomplete="username"
@@ -113,7 +74,7 @@
                 <div class="relative mt-1">
                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                         <svg class="h-5 w-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+                            <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
                         </svg>
                     </div>
                     <input type="password" id="userPass" autocomplete="current-password"
@@ -144,7 +105,7 @@
         <button onclick="toggleOverview()" title="ดูโปรโมชั่นรายวัน"
             class="absolute top-4 right-4 bg-white/20 hover:bg-white/30 active:bg-white/40 p-2 rounded-xl backdrop-blur-sm transition-all text-white z-20 border border-white/10">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h14a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h14a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
             </svg>
         </button>
     </div>
@@ -157,7 +118,7 @@
         <!-- TABS -->
         <div class="flex border-b border-gray-300 mb-5 px-1">
             <button onclick="switchTab('general')" id="tab-general" class="tab-btn active flex-1 py-3 text-sm font-semibold text-center">🔍 ค้นหาทั่วไป</button>
-            <button onclick="switchTab('target')"  id="tab-target"  class="tab-btn flex-1 py-3 text-sm font-semibold text-center flex items-center justify-center gap-1">
+            <button onclick="switchTab('target')" id="tab-target" class="tab-btn flex-1 py-3 text-sm font-semibold text-center flex items-center justify-center gap-1">
                 ⭐ สาขาโฟกัส
                 <span id="targetBadge" class="bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold">0</span>
             </button>
@@ -182,9 +143,7 @@
 
             <!-- Date Picker -->
             <div class="date-pill-trigger mt-4 flex items-center justify-between bg-blue-50 border-2 border-blue-200 rounded-2xl px-4 py-3 hover:bg-blue-100/70 relative overflow-hidden">
-                <!-- Overlay input directly to be clicked natively by the browser without JS trigger -->
                 <input type="date" id="datePicker" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onchange="handleDateChange('list')">
-                
                 <div class="flex items-center gap-2 pointer-events-none">
                     <span class="text-blue-600 text-lg">📅</span>
                     <div>
@@ -199,7 +158,7 @@
                     <button onclick="resetDate()" id="resetBtn" class="hidden text-[11px] font-bold text-red-600 bg-white border border-red-300 px-3 py-1.5 rounded-xl hover:bg-red-50 active:scale-95 transition-all">ล้าง</button>
                     <span class="text-blue-500 pointer-events-none">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
                         </svg>
                     </span>
                 </div>
@@ -266,8 +225,9 @@
 
 <script>
 // ═══════════════════ CONFIG ═══════════════════
-const API_URL     = "https://script.google.com/macros/s/AKfycbx2xcAfb1RtYd4fZbBilQm7z9t3--bVHlfw6TbhlF3GBHOFWIs37wVVGalV8RzrfnOs/exec";
-const AUTH_CONFIG = {"plpbs":"121234"};
+const API_URL = "https://script.google.com/macros/s/AKfycbytao0ZlUz5Rxu8pyaN0H5dy4a1QJWyet--LQSTYFWnTZeYJluxBAgMnt4Mu1uzTYh4/exec";
+// ✅ ไม่มี AUTH_CONFIG แล้ว → ย้ายไปเก็บใน GAS แทน
+
 const TARGET_STORES  = ["5552","5605","9687","13401","13544","15100","16070","16864","17196","18232","18562","18645","18813","19243"];
 const STARRED_STORES = ["5605","18232"];
 
@@ -278,11 +238,10 @@ let currentStore = '';
 let currentMode  = 'general';
 let selectedDate = '';
 
-// Helpers
 const $ = id => document.getElementById(id);
 
 function fmtDateTH(iso) {
-    if(!iso) return '—';
+    if (!iso) return '—';
     try {
         const [y,m,d] = iso.split('-');
         const MONTHS = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
@@ -297,76 +256,78 @@ function getKey(obj, kws) {
 
 function progress(pct, done=false) {
     const pb = $('progressBar');
-    if(!pb) return;
-    pb.style.width  = pct+'%';
+    if (!pb) return;
+    pb.style.width   = pct + '%';
     pb.style.opacity = '1';
-    if (done) setTimeout(()=> { if(pb) pb.style.opacity='0'; }, 400);
+    if (done) setTimeout(() => { if(pb) pb.style.opacity = '0'; }, 400);
 }
 
 function showStatus(html, type='success') {
-    const s = {success:'bg-green-50 text-green-800 border-green-300', error:'bg-red-50 text-red-800 border-red-300', info:'bg-blue-50 text-blue-800 border-blue-300'};
+    const s = {
+        success: 'bg-green-50 text-green-800 border-green-300',
+        error:   'bg-red-50 text-red-800 border-red-300',
+        info:    'bg-blue-50 text-blue-800 border-blue-300'
+    };
     const el = $('statusMessage');
-    if(!el) return;
-    el.innerHTML = html;
-    el.className = `mb-4 p-4 rounded-2xl text-sm font-bold text-center border-2 ${s[type] || s.info}`;
+    if (!el) return;
+    el.innerHTML  = html;
+    el.className  = `mb-4 p-4 rounded-2xl text-sm font-bold text-center border-2 ${s[type] || s.info}`;
     el.classList.remove('hidden');
-    if(type==='success') setTimeout(()=> { if(el) el.classList.add('hidden'); }, 3000);
+    if (type === 'success') setTimeout(() => { if(el) el.classList.add('hidden'); }, 3000);
 }
 
-// Global error listener
-window.onerror = function(message, source, lineno, colno, error) {
-    console.error("Caught error:", message, "at", source, lineno);
-    return true; 
-};
-
-// ═══════════════════ AUTH ═══════════════════
+// ═══════════════════ AUTH (ส่งไปตรวจที่ GAS) ═══════════════════
 function checkLogin() {
-    const idVal = $('userId') ? $('userId').value.trim() : '';
-    const passVal = $('userPass') ? $('userPass').value.trim() : '';
-    if (AUTH_CONFIG[idVal] === passVal) {
-        if($('loginBtn')) $('loginBtn').disabled = true;
-        if($('loginGate')) $('loginGate').style.opacity = '0';
-        setTimeout(()=>{
-            if($('loginGate')) $('loginGate').style.display = 'none';
-            if($('mainContent')) $('mainContent').style.display = 'block';
-            requestAnimationFrame(()=> { if($('mainContent')) $('mainContent').classList.add('visible'); });
-            if($('displayUser')) $('displayUser').textContent = idVal;
-            
-            const today = new Date().toISOString().split('T')[0];
-            selectedDate = today;
-            if($('datePicker')) $('datePicker').value = today;
-            if($('proDatePicker')) $('proDatePicker').value = today;
-            fetchData();
-        }, 350);
-    } else {
-        if($('loginError')) $('loginError').classList.remove('hidden');
-        if($('loginCard')) $('loginCard').classList.add('shake');
-        setTimeout(()=> { if($('loginCard')) $('loginCard').classList.remove('shake'); }, 500);
-    }
+    const idVal   = $('userId').value.trim();
+    const passVal = $('userPass').value.trim();
+    if (!idVal || !passVal) return;
+
+    $('loginBtn').disabled    = true;
+    $('loginBtnText').textContent = 'กำลังตรวจสอบ...';
+    $('loginError').classList.add('hidden');
+
+    fetch(`${API_URL}?action=login&user=${encodeURIComponent(idVal)}&pass=${encodeURIComponent(passVal)}`)
+        .then(r => r.json())
+        .then(data => {
+            if (data.auth === true) {
+                $('loginGate').style.opacity = '0';
+                setTimeout(() => {
+                    $('loginGate').style.display = 'none';
+                    $('mainContent').style.display = 'block';
+                    requestAnimationFrame(() => $('mainContent').classList.add('visible'));
+                    $('displayUser').textContent = idVal;
+                    const today = new Date().toISOString().split('T')[0];
+                    selectedDate = today;
+                    $('datePicker').value    = today;
+                    $('proDatePicker').value = today;
+                    fetchData();
+                }, 350);
+            } else {
+                $('loginError').classList.remove('hidden');
+                $('loginCard').classList.add('shake');
+                $('loginBtn').disabled        = false;
+                $('loginBtnText').textContent = 'เข้าสู่ระบบ';
+                setTimeout(() => $('loginCard').classList.remove('shake'), 500);
+            }
+        })
+        .catch(() => {
+            showStatus('⚠️ ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', 'error');
+            $('loginBtn').disabled        = false;
+            $('loginBtnText').textContent = 'เข้าสู่ระบบ';
+        });
 }
 
 // ═══════════════════ DATA FETCHING ═══════════════════
 async function fetchData() {
     progress(30);
     try {
-        const response = await fetch(API_URL, {
-            method: 'GET',
-            mode: 'cors'
-        });
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
+        const response = await fetch(API_URL, { method: 'GET', mode: 'cors' });
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const responseData = await response.json();
-        
+
         if (responseData && typeof responseData === 'object') {
-            if (Array.isArray(responseData)) {
-                deliveryData = responseData;
-            } else {
-                deliveryData = responseData.delivery || responseData.data || [];
-                proData = responseData.pro || [];
-            }
+            deliveryData = Array.isArray(responseData) ? responseData : (responseData.delivery || responseData.data || []);
+            proData      = responseData.pro || [];
         }
 
         if (deliveryData.length > 0) {
@@ -377,13 +338,12 @@ async function fetchData() {
         } else {
             throw new Error('ไม่พบข้อมูล');
         }
-        
     } catch(err) {
         console.error("Fetch Data Error:", err);
         progress(100, true);
         showStatus('⚠️ ใช้ข้อมูลสำรองเนื่องจากเซิร์ฟเวอร์ขัดข้อง', 'info');
         deliveryData = generateMockDelivery();
-        proData = generateMockPro();
+        proData      = generateMockPro();
         populateDropdown(deliveryData);
         renderTargetButtons();
         applyFilters();
@@ -392,17 +352,17 @@ async function fetchData() {
 
 function generateMockDelivery() {
     const stores = ["5552","5605","9687"];
-    const names = ["คุณวิชัย", "คุณสมศรี", "คุณนภา", "คุณมานะ"];
-    const mock = [];
-    const today = new Date().toISOString().split('T')[0];
-    for(let i=0; i<15; i++) {
+    const names  = ["คุณวิชัย","คุณสมศรี","คุณนภา","คุณมานะ"];
+    const mock   = [];
+    const today  = new Date().toISOString().split('T')[0];
+    for (let i = 0; i < 15; i++) {
         mock.push({
             "รหัสร้าน": stores[Math.floor(Math.random()*stores.length)],
-            "วันที่": today,
+            "วันที่":   today,
             "หมายเลข": 5000 + i,
-            "ราคา": 120 + (i*15),
-            "ชื่อ": names[Math.floor(Math.random()*names.length)],
-            "จ่าย": Math.random() > 0.5 ? "เงินสด" : "โอนเงิน"
+            "ราคา":    120 + (i * 15),
+            "ชื่อ":    names[Math.floor(Math.random()*names.length)],
+            "จ่าย":    Math.random() > 0.5 ? "เงินสด" : "โอนเงิน"
         });
     }
     return mock;
@@ -410,7 +370,7 @@ function generateMockDelivery() {
 
 function generateMockPro() {
     const mock = [];
-    for(let i=1; i<=31; i++) {
+    for (let i = 1; i <= 31; i++) {
         mock.push({ "A": i, "B": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600", "C": "โปรโมชั่นคุ้มวันนี้", "D": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600" });
     }
     return mock;
@@ -418,98 +378,93 @@ function generateMockPro() {
 
 // ═══════════════════ UI RENDERING ═══════════════════
 function populateDropdown(data) {
-    if(!data || data.length === 0) return;
+    if (!data || data.length === 0) return;
     const storeKey = getKey(data[0], ['รหัสร้าน','Store']);
     if (!storeKey) return;
-    const stores = [...new Set(data.map(d=>d[storeKey]))].filter(Boolean).sort((a,b)=>String(a).localeCompare(String(b), undefined, {numeric:true}));
-    const sel = $('storeSelect');
-    if(!sel) return;
+    const stores = [...new Set(data.map(d => d[storeKey]))].filter(Boolean).sort((a,b) => String(a).localeCompare(String(b), undefined, {numeric:true}));
+    const sel    = $('storeSelect');
+    if (!sel) return;
     sel.innerHTML = '<option value="">— เลือกรหัสร้าน —</option>';
-    stores.forEach(s=>{ 
-        const o=document.createElement('option'); o.value=s; o.textContent=`🏪 ${s}`; 
-        if(s == currentStore) o.selected = true;
-        sel.appendChild(o); 
+    stores.forEach(s => {
+        const o = document.createElement('option');
+        o.value       = s;
+        o.textContent = `🏪 ${s}`;
+        if (s == currentStore) o.selected = true;
+        sel.appendChild(o);
     });
 }
 
 function renderTargetButtons() {
     const grid = $('targetButtonsGrid');
-    if(!grid) return;
+    if (!grid) return;
     grid.innerHTML = '';
-    TARGET_STORES.forEach(store=>{
-        const btn = document.createElement('button');
+    TARGET_STORES.forEach(store => {
+        const btn     = document.createElement('button');
         const starred = STARRED_STORES.includes(store);
-        const active = currentStore === store;
-        btn.className = `store-btn font-bold py-3 rounded-xl text-sm transition-all border-2 ${active ? 'bg-blue-600 text-white shadow-lg border-blue-600' : starred ? 'starred-store' : 'bg-white border-gray-200 text-gray-700 shadow-sm hover:border-blue-300'}`;
+        const active  = currentStore === store;
+        btn.className = `font-bold py-3 rounded-xl text-sm transition-all border-2 ${active ? 'bg-blue-600 text-white shadow-lg border-blue-600' : starred ? 'bg-yellow-50 border-yellow-300 text-yellow-800' : 'bg-white border-gray-200 text-gray-700 shadow-sm hover:border-blue-300'}`;
         btn.innerHTML = starred ? `⭐ ${store}` : store;
-        btn.onclick = () => { currentStore = store; applyFilters(); renderTargetButtons(); };
+        btn.onclick   = () => { currentStore = store; applyFilters(); renderTargetButtons(); };
         grid.appendChild(btn);
     });
-    if($('targetBadge')) $('targetBadge').textContent = TARGET_STORES.length;
+    if ($('targetBadge')) $('targetBadge').textContent = TARGET_STORES.length;
 }
 
 function switchTab(mode) {
     currentMode = mode;
-    if($('tab-general')) $('tab-general').classList.toggle('active', mode==='general');
-    if($('tab-target')) $('tab-target').classList.toggle('active', mode==='target');
-    if($('searchMode-general')) $('searchMode-general').classList.toggle('hidden', mode!=='general');
-    if($('searchMode-target')) $('searchMode-target').classList.toggle('hidden', mode!=='target');
+    $('tab-general').classList.toggle('active', mode === 'general');
+    $('tab-target').classList.toggle('active', mode === 'target');
+    $('searchMode-general').classList.toggle('hidden', mode !== 'general');
+    $('searchMode-target').classList.toggle('hidden', mode !== 'target');
 }
 
 function handleDateChange(source) {
     let newDate = '';
     if (source === 'list') {
-        newDate = $('datePicker') ? $('datePicker').value : '';
-        if($('proDatePicker')) $('proDatePicker').value = newDate;
-    } else if (source === 'pro') {
-        newDate = $('proDatePicker') ? $('proDatePicker').value : '';
-        if($('datePicker')) $('datePicker').value = newDate;
+        newDate = $('datePicker').value;
+        $('proDatePicker').value = newDate;
+    } else {
+        newDate = $('proDatePicker').value;
+        $('datePicker').value = newDate;
     }
     selectedDate = newDate;
-    
     applyFilters();
-    
     const op = $('overviewPage');
-    if (op && !op.classList.contains('hidden')) {
-        renderProContent();
-    }
+    if (op && !op.classList.contains('hidden')) renderProContent();
 }
 
 function applyFilters() {
-    if (currentMode==='general' && $('storeSelect')) currentStore = $('storeSelect').value;
-    const pickedDate = selectedDate; 
-    
-    if(pickedDate) {
-        if($('periodRange')) $('periodRange').textContent = fmtDateTH(pickedDate);
-        if($('resetBtn')) $('resetBtn').classList.remove('hidden');
+    if (currentMode === 'general' && $('storeSelect')) currentStore = $('storeSelect').value;
+    const pickedDate = selectedDate;
+
+    if (pickedDate) {
+        $('periodRange').textContent = fmtDateTH(pickedDate);
+        $('resetBtn').classList.remove('hidden');
     } else {
-        if($('periodRange')) $('periodRange').textContent = '— เลือกวันที่ —';
-        if($('resetBtn')) $('resetBtn').classList.add('hidden');
+        $('periodRange').textContent = '— เลือกวันที่ —';
+        $('resetBtn').classList.add('hidden');
     }
 
-    // --- เช็คว่าวันนั้นมีโปรโมชั่นหรือไม่ ---
     const promoBadge = $('promoBadge');
-    if(promoBadge) {
-        promoBadge.classList.add('hidden'); 
-        if(pickedDate && proData && proData.length > 0) {
+    if (promoBadge) {
+        promoBadge.classList.add('hidden');
+        if (pickedDate && proData && proData.length > 0) {
             const day = parseInt(pickedDate.split('-')[2], 10);
             const todayPro = proData.find(item => (item.A == day || item['day'] == day || item['วันที่'] == day));
-            if(todayPro && (todayPro.B || todayPro.C || todayPro.D || todayPro.imageUrl1 || todayPro.message || todayPro.imageUrl2)) {
-                promoBadge.classList.remove('hidden');
-            }
+            if (todayPro && (todayPro.B || todayPro.C || todayPro.D)) promoBadge.classList.remove('hidden');
         }
     }
 
     const container = $('orderContainer');
     if (!currentStore || !pickedDate) {
-        if(container) container.innerHTML = '<div class="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-gray-300 font-bold text-gray-500">กรุณาเลือกสาขาและวันที่</div>';
-        if($('summarySection')) $('summarySection').classList.add('hidden');
-        if($('cashCustomerSection')) $('cashCustomerSection').classList.add('hidden');
+        container.innerHTML = '<div class="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-gray-300 font-bold text-gray-500">กรุณาเลือกสาขาและวันที่</div>';
+        $('summarySection').classList.add('hidden');
+        $('cashCustomerSection').classList.add('hidden');
         return;
     }
 
-    if(!deliveryData || deliveryData.length === 0) return;
-    const s = deliveryData[0];
+    if (!deliveryData || deliveryData.length === 0) return;
+    const s        = deliveryData[0];
     const storeKey = getKey(s, ['รหัสร้าน','Store']);
     const dateKey  = getKey(s, ['วันที่','Date']);
     const payKey   = getKey(s, ['จ่าย','Payment','ชำระ']);
@@ -524,70 +479,67 @@ function applyFilters() {
     });
 
     if (!filtered.length) {
-        if(container) container.innerHTML = '<div class="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-gray-300 font-bold text-gray-500">ไม่มีข้อมูลการสั่งซื้อในวันที่เลือก</div>';
-        if($('summarySection')) $('summarySection').classList.add('hidden');
-        if($('cashCustomerSection')) $('cashCustomerSection').classList.add('hidden');
+        container.innerHTML = '<div class="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-gray-300 font-bold text-gray-500">ไม่มีข้อมูลการสั่งซื้อในวันที่เลือก</div>';
+        $('summarySection').classList.add('hidden');
+        $('cashCustomerSection').classList.add('hidden');
         return;
     }
 
-    if($('summarySection')) $('summarySection').classList.remove('hidden');
-    if($('totalBills')) $('totalBills').textContent = filtered.length;
-    if($('totalPeople')) $('totalPeople').textContent = new Set(filtered.map(i=>i[nameKey]||'ไม่ระบุ')).size;
-    
-    const cashList = filtered.filter(i=>String(i[payKey]||'').includes('สด'));
-    if($('totalCash')) $('totalCash').textContent = cashList.length;
+    $('summarySection').classList.remove('hidden');
+    $('totalBills').textContent  = filtered.length;
+    $('totalPeople').textContent = new Set(filtered.map(i => i[nameKey] || 'ไม่ระบุ')).size;
+
+    const cashList = filtered.filter(i => String(i[payKey] || '').includes('สด'));
+    $('totalCash').textContent = cashList.length;
 
     const cashDetailList = $('cashCustomerList');
-    if(cashList.length > 0 && cashDetailList) {
-        if($('cashCustomerSection')) $('cashCustomerSection').classList.remove('hidden');
+    if (cashList.length > 0 && cashDetailList) {
+        $('cashCustomerSection').classList.remove('hidden');
         const counts = {};
-        cashList.forEach(i=>{ const n=i[nameKey]||'ไม่ระบุ'; counts[n]=(counts[n]||0)+1; });
-        cashDetailList.innerHTML = Object.entries(counts).sort((a,b)=>b[1]-a[1]).map(([name,count])=>`
+        cashList.forEach(i => { const n = i[nameKey] || 'ไม่ระบุ'; counts[n] = (counts[n] || 0) + 1; });
+        cashDetailList.innerHTML = Object.entries(counts).sort((a,b) => b[1]-a[1]).map(([name,count]) => `
             <div class="flex justify-between items-center bg-white px-4 py-3 rounded-2xl border border-red-100 shadow-sm">
                 <span class="text-[15px] font-black text-gray-800">${name}</span>
                 <span class="text-[11px] bg-red-100 text-red-700 px-3 py-1.5 rounded-lg font-black border border-red-200">เงินสด ${count} ออเดอร์</span>
             </div>
         `).join('');
     } else {
-        if($('cashCustomerSection')) $('cashCustomerSection').classList.add('hidden');
+        $('cashCustomerSection').classList.add('hidden');
     }
 
-    if(container) {
-        container.innerHTML = filtered.sort((a,b)=>String(b[idKey]).localeCompare(String(a[idKey]), undefined, {numeric:true})).map((item,idx)=>{
-            const isCash = String(item[payKey]||'').includes('สด');
+    container.innerHTML = filtered
+        .sort((a,b) => String(b[idKey]).localeCompare(String(a[idKey]), undefined, {numeric:true}))
+        .map(item => {
+            const isCash = String(item[payKey] || '').includes('สด');
             return `
             <div class="bg-white rounded-3xl p-5 shadow-md border border-gray-200 mb-4 card-animate ${isCash ? 'cash-highlight' : ''}">
                 <div class="flex justify-between items-start mb-3">
                     <div>
-                        <p class="text-[11px] text-gray-500 font-bold uppercase tracking-wider">#${item[idKey]||'—'}</p>
-                        <p class="text-xl font-black text-blue-800 leading-tight mt-0.5">${item[nameKey]||'ไม่ระบุชื่อ'}</p>
+                        <p class="text-[11px] text-gray-500 font-bold uppercase tracking-wider">#${item[idKey] || '—'}</p>
+                        <p class="text-xl font-black text-blue-800 leading-tight mt-0.5">${item[nameKey] || 'ไม่ระบุชื่อ'}</p>
                     </div>
-                    <span class="text-[11px] bg-blue-100 text-blue-700 px-3 py-1.5 rounded-xl font-bold border border-blue-200">${String(item[dateKey]||'').split('T')[0]}</span>
+                    <span class="text-[11px] bg-blue-100 text-blue-700 px-3 py-1.5 rounded-xl font-bold border border-blue-200">${String(item[dateKey] || '').split('T')[0]}</span>
                 </div>
                 <div class="flex justify-between items-center pt-4 border-t border-gray-100">
-                    <span class="text-sm font-black ${isCash ? 'text-red-600 bg-red-50 px-3 py-1 rounded-lg' : 'text-gray-600 bg-gray-50 px-3 py-1 rounded-lg'}">${item[payKey]||'—'}</span>
-                    <p class="text-xl font-black text-emerald-600">฿${Number(item[priceKey]||0).toLocaleString()}</p>
+                    <span class="text-sm font-black ${isCash ? 'text-red-600 bg-red-50 px-3 py-1 rounded-lg' : 'text-gray-600 bg-gray-50 px-3 py-1 rounded-lg'}">${item[payKey] || '—'}</span>
+                    <p class="text-xl font-black text-emerald-600">฿${Number(item[priceKey] || 0).toLocaleString()}</p>
                 </div>
             </div>`;
         }).join('');
-    }
 }
 
 function resetDate() {
-    selectedDate = '';
-    if($('datePicker')) $('datePicker').value = '';
-    if($('proDatePicker')) $('proDatePicker').value = '';
-    
+    selectedDate           = '';
+    $('datePicker').value    = '';
+    $('proDatePicker').value = '';
     applyFilters();
     const op = $('overviewPage');
-    if (op && !op.classList.contains('hidden')) {
-        renderProContent();
-    }
+    if (op && !op.classList.contains('hidden')) renderProContent();
 }
 
 function toggleOverview() {
     const lp = $('listViewPage'), op = $('overviewPage');
-    if(!lp || !op) return;
+    if (!lp || !op) return;
     if (op.classList.contains('hidden')) {
         lp.classList.add('hidden'); op.classList.remove('hidden');
         renderProContent();
@@ -600,65 +552,56 @@ function getCleanImageUrl(url) {
     if (!url) return '';
     let clean = String(url).trim();
     const fileMatch = clean.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
-    if (fileMatch && fileMatch[1]) {
-        return `https://drive.google.com/uc?id=${fileMatch[1]}&export=view`; 
-    }
+    if (fileMatch && fileMatch[1]) return `https://drive.google.com/uc?id=${fileMatch[1]}&export=view`;
     const idMatch = clean.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-    if (idMatch && idMatch[1]) {
-        return `https://drive.google.com/uc?id=${idMatch[1]}&export=view`;
-    }
+    if (idMatch && idMatch[1]) return `https://drive.google.com/uc?id=${idMatch[1]}&export=view`;
     return clean;
 }
 
 function renderProContent() {
-    const pickedDate = selectedDate;
+    const pickedDate  = selectedDate;
     const contentArea = $('proContentArea');
-    
-    if(!pickedDate) {
-        if($('ovDateDisplay')) $('ovDateDisplay').textContent = "กรุณาเลือกวันที่";
-        if(contentArea) contentArea.innerHTML = '<div class="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-gray-300 font-bold text-gray-500">เลือกวันที่จากหน้ารายการก่อนดูโปรโมชั่น</div>';
+
+    if (!pickedDate) {
+        $('ovDateDisplay').textContent = "กรุณาเลือกวันที่";
+        contentArea.innerHTML = '<div class="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-gray-300 font-bold text-gray-500">เลือกวันที่จากหน้ารายการก่อนดูโปรโมชั่น</div>';
         return;
     }
 
     const day = parseInt(pickedDate.split('-')[2], 10);
-    if($('ovDateDisplay')) $('ovDateDisplay').textContent = fmtDateTH(pickedDate);
+    $('ovDateDisplay').textContent = fmtDateTH(pickedDate);
 
-    if(!proData || proData.length === 0) {
-        if(contentArea) contentArea.innerHTML = '<div class="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-gray-300 font-bold text-gray-500">ไม่มีข้อมูลโปรโมชั่น (ไม่พบข้อมูลใน Sheet)</div>';
+    if (!proData || proData.length === 0) {
+        contentArea.innerHTML = '<div class="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-gray-300 font-bold text-gray-500">ไม่มีข้อมูลโปรโมชั่น</div>';
         return;
     }
 
     const todayPro = proData.find(item => (item.A == day || item['day'] == day || item['วันที่'] == day));
-
-    if(!todayPro) {
-        if(contentArea) contentArea.innerHTML = '<div class="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-gray-300 font-bold text-gray-500">ไม่มีโปรโมชั่นสำหรับวันที่เลือก</div>';
+    if (!todayPro) {
+        contentArea.innerHTML = '<div class="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-gray-300 font-bold text-gray-500">ไม่มีโปรโมชั่นสำหรับวันที่เลือก</div>';
         return;
     }
 
     const img1 = getCleanImageUrl(todayPro.B || todayPro.imageUrl1);
     const msg  = todayPro.C || todayPro.message;
     const img2 = getCleanImageUrl(todayPro.D || todayPro.imageUrl2);
+    const fallbackImg = "data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%25%22 height=%22200%22 viewBox=%220 0 100 100%22 preserveAspectRatio=%22none%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23f8fafc%22/%3E%3Ctext x=%2250%22 y=%2250%22 font-family=%22sans-serif%22 font-size=%224%22 font-weight=%22bold%22 text-anchor=%22middle%22 alignment-baseline=%22middle%22 fill=%22%2394a3b8%22%3Eภาพไม่พร้อมใช้งาน%3C/text%3E%3C/svg%3E";
 
-    const fallbackImg = "data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%25%22 height=%22200%22 viewBox=%220 0 100 100%22 preserveAspectRatio=%22none%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23f8fafc%22/%3E%3Ctext x=%2250%22 y=%2250%22 font-family=%22sans-serif%22 font-size=%224%22 font-weight=%22bold%22 text-anchor=%22middle%22 alignment-baseline=%22middle%22 fill=%22%2394a3b8%22%3Eภาพไม่พร้อมใช้งาน / สิทธิ์ลิงก์ไม่ถูกต้อง%3C/text%3E%3C/svg%3E";
-
-    if(contentArea) {
-        contentArea.innerHTML = `
-            ${img1 ? `<img src="${img1}" class="pro-image card-animate" style="animation-delay: 50ms" onerror="this.onerror=null;this.src='${fallbackImg}'">` : ''}
-            ${msg ? `
-            <div class="bg-gradient-to-br from-yellow-50 to-white p-6 rounded-3xl border-2 border-yellow-200 shadow-md card-animate" style="animation-delay: 150ms">
-                <p class="text-[11px] font-black text-yellow-600 uppercase tracking-widest mb-2">Message สำหรับร้านค้า</p>
-                <p class="text-gray-800 font-bold text-lg leading-relaxed whitespace-pre-line">${msg}</p>
-            </div>` : ''}
-            ${img2 ? `<img src="${img2}" class="pro-image card-animate" style="animation-delay: 250ms" onerror="this.onerror=null;this.src='${fallbackImg}'">` : ''}
-        `;
-    }
+    contentArea.innerHTML = `
+        ${img1 ? `<img src="${img1}" class="pro-image card-animate" style="animation-delay:50ms" onerror="this.onerror=null;this.src='${fallbackImg}'">` : ''}
+        ${msg  ? `<div class="bg-gradient-to-br from-yellow-50 to-white p-6 rounded-3xl border-2 border-yellow-200 shadow-md card-animate" style="animation-delay:150ms">
+                    <p class="text-[11px] font-black text-yellow-600 uppercase tracking-widest mb-2">Message สำหรับร้านค้า</p>
+                    <p class="text-gray-800 font-bold text-lg leading-relaxed whitespace-pre-line">${msg}</p>
+                  </div>` : ''}
+        ${img2 ? `<img src="${img2}" class="pro-image card-animate" style="animation-delay:250ms" onerror="this.onerror=null;this.src='${fallbackImg}'">` : ''}
+    `;
 }
 
 window.onload = () => {
-    const userIdInput = $('userId');
+    const userIdInput   = $('userId');
     const userPassInput = $('userPass');
-    if(userIdInput) userIdInput.addEventListener('keypress', function(e) { if(e.key === 'Enter') userPassInput.focus(); });
-    if(userPassInput) userPassInput.addEventListener('keypress', function(e) { if(e.key === 'Enter') checkLogin(); });
+    if (userIdInput)   userIdInput.addEventListener('keypress',   e => { if (e.key === 'Enter') userPassInput.focus(); });
+    if (userPassInput) userPassInput.addEventListener('keypress', e => { if (e.key === 'Enter') checkLogin(); });
 };
 </script>
 </body>
