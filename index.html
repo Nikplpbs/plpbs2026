@@ -9,38 +9,26 @@
     <style>
         *,*::before,*::after{box-sizing:border-box}
         body{font-family:'Sarabun',sans-serif;background:#f1f5f9;-webkit-tap-highlight-color:transparent;font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
-
         #loginGate{transition:opacity 0.4s ease}
         @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
         .shake{animation:shake 0.45s ease}
-
         #progressBar{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,#3b82f6,#818cf8);width:0%;z-index:9999;transition:width 0.3s ease,opacity 0.4s ease;border-radius:0 2px 2px 0;box-shadow:0 0 8px rgba(59,130,246,.6)}
-
         #mainContent{display:none;opacity:0;transition:opacity 0.4s ease}
         #mainContent.visible{opacity:1}
         .page{transition:opacity 0.25s ease,transform 0.25s ease}
         .page.hidden{display:none!important}
-
         @keyframes cardIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
         .card-animate{animation:cardIn 0.35s ease both}
-
         .tab-btn{transition:color .2s,border-color .2s,opacity .2s;border-bottom:3px solid transparent;opacity:.5}
         .tab-btn.active{border-bottom-color:#2563eb;color:#2563eb;opacity:1;font-weight:700}
-
         .date-pill-trigger{cursor:pointer;transition:all 0.2s}
         .date-pill-trigger:active{transform:scale(0.97)}
         .cash-highlight{border-left:4px solid #ef4444;background-color:#fef2f2}
-
         .pro-image{width:100%;border-radius:1.5rem;object-fit:cover;background:#f1f5f9;box-shadow:0 4px 12px rgba(0,0,0,0.05);min-height:200px}
-
         .hide-scroll::-webkit-scrollbar{display:none}
         .hide-scroll{-ms-overflow-style:none;scrollbar-width:none}
-
         input[type="date"]::-webkit-calendar-picker-indicator{position:absolute;top:0;left:0;right:0;bottom:0;width:100%;height:100%;opacity:0;cursor:pointer}
-
         .text-outline-red{color:#ffffff;font-weight:800;text-shadow:-1.5px -1.5px 0 #dc2626,0 -1.5px 0 #dc2626,1.5px -1.5px 0 #dc2626,1.5px 0 0 #dc2626,1.5px 1.5px 0 #dc2626,0 1.5px 0 #dc2626,-1.5px 1.5px 0 #dc2626,-1.5px 0 0 #dc2626,0px 2px 2px rgba(0,0,0,0.25)}
-
-        /* lockout banner */
         #lockoutBanner{display:none;background:#fef2f2;border:1.5px solid #fca5a5;border-radius:1rem;padding:.75rem 1rem;text-align:center;font-size:.8rem;font-weight:700;color:#b91c1c;margin-top:.75rem}
     </style>
 </head>
@@ -63,9 +51,7 @@
                 <label class="text-[10px] font-bold text-gray-600 uppercase ml-1 tracking-widest">ID</label>
                 <div class="relative mt-1">
                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <svg class="h-5 w-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
-                        </svg>
+                        <svg class="h-5 w-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/></svg>
                     </div>
                     <input type="text" id="userId" autocomplete="username"
                         class="w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-300 rounded-2xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all font-bold text-gray-800 placeholder-gray-400"
@@ -76,9 +62,7 @@
                 <label class="text-[10px] font-bold text-gray-600 uppercase ml-1 tracking-widest">PASSWORD</label>
                 <div class="relative mt-1">
                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <svg class="h-5 w-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
-                        </svg>
+                        <svg class="h-5 w-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/></svg>
                     </div>
                     <input type="password" id="userPass" autocomplete="current-password"
                         class="w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-300 rounded-2xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all font-bold text-gray-800 placeholder-gray-400"
@@ -89,8 +73,7 @@
                 class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl shadow-lg shadow-blue-200 active:scale-95 transition-all mt-4 flex items-center justify-center gap-2">
                 <span id="loginBtnText">เข้าสู่ระบบ</span>
             </button>
-            <p id="loginError" class="text-red-500 text-center text-sm font-medium hidden">❌ รหัสผ่านไม่ถูกต้อง</p>
-            <!-- [FIX #3] Lockout banner -->
+            <p id="loginError" class="text-red-500 text-center text-sm font-medium hidden"></p>
             <div id="lockoutBanner">🔒 ลองผิดเกินกำหนด — กรุณารอ <span id="lockoutCountdown"></span></div>
         </div>
     </div>
@@ -100,35 +83,26 @@
 <div id="mainContent">
 <div class="max-w-md mx-auto px-4 pt-8">
 
-    <!-- HEADER -->
     <div class="bg-gradient-to-r from-blue-600 to-blue-800 rounded-3xl p-6 shadow-xl shadow-blue-200 mb-6 text-white text-center relative overflow-hidden">
         <div class="absolute inset-0 opacity-10" style="background-image:url('https://www.transparenttextures.com/patterns/cubes.png')"></div>
         <div class="relative z-10">
             <h1 class="text-2xl font-bold tracking-wide">Delivery 270+</h1>
             <p class="text-blue-100 text-xs mt-1">ผู้ใช้งาน: <span id="displayUser" class="font-bold text-white underline decoration-dotted">—</span></p>
         </div>
-        <!-- Promo toggle -->
         <button onclick="toggleOverview()" title="ดูโปรโมชั่นรายวัน"
             class="absolute top-4 right-14 bg-white/20 hover:bg-white/30 active:bg-white/40 p-2 rounded-xl backdrop-blur-sm transition-all text-white z-20 border border-white/10">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h14a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h14a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
         </button>
-        <!-- [FIX #4] Logout button -->
         <button onclick="logout()" title="ออกจากระบบ"
             class="absolute top-4 right-4 bg-white/20 hover:bg-red-500/70 active:bg-red-600/80 p-2 rounded-xl backdrop-blur-sm transition-all text-white z-20 border border-white/10">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
         </button>
     </div>
 
     <div id="statusMessage" class="hidden mb-4 p-4 rounded-2xl text-xs font-bold text-center transition-all"></div>
 
-    <!-- ══════════════════════ PAGE 1: LIST ══════════════════════ -->
+    <!-- PAGE 1: LIST -->
     <div id="listViewPage" class="page">
-
-        <!-- TABS -->
         <div class="flex border-b border-gray-300 mb-5 px-1">
             <button onclick="switchTab('general')" id="tab-general" class="tab-btn active flex-1 py-3 text-sm font-semibold text-center">🔍 ค้นหาทั่วไป</button>
             <button onclick="switchTab('target')" id="tab-target" class="tab-btn flex-1 py-3 text-sm font-semibold text-center flex items-center justify-center gap-1">
@@ -137,7 +111,6 @@
             </button>
         </div>
 
-        <!-- FILTER BOX -->
         <div class="bg-white rounded-3xl p-5 shadow-md mb-5 border border-gray-200">
             <div id="searchMode-general" class="space-y-4">
                 <div>
@@ -148,19 +121,16 @@
                     </select>
                 </div>
             </div>
-
             <div id="searchMode-target" class="hidden">
                 <label class="block text-[11px] font-bold text-gray-600 uppercase mb-3 tracking-widest">สาขาที่ต้องดูแลพิเศษ</label>
                 <div id="targetButtonsGrid" class="grid grid-cols-3 gap-2"></div>
             </div>
-
-            <!-- Date Picker -->
             <div class="date-pill-trigger mt-4 flex items-center justify-between bg-blue-50 border-2 border-blue-200 rounded-2xl px-4 py-3 hover:bg-blue-100/70 relative overflow-hidden">
                 <input type="date" id="datePicker" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onchange="handleDateChange('list')">
                 <div class="flex items-center gap-2 pointer-events-none">
                     <span class="text-blue-600 text-lg">📅</span>
                     <div>
-                        <p id="periodLabel" class="text-[10px] font-bold text-blue-600 uppercase tracking-wider">แสดงข้อมูลประจำวันที่</p>
+                        <p class="text-[10px] font-bold text-blue-600 uppercase tracking-wider">แสดงข้อมูลประจำวันที่</p>
                         <div class="flex items-center gap-2 mt-0.5">
                             <p id="periodRange" class="text-sm font-black text-blue-800">—</p>
                             <span id="promoBadge" class="hidden text-outline-red text-[13px] ml-1 animate-pulse tracking-wide">วันนี้มีโปร!</span>
@@ -170,15 +140,12 @@
                 <div class="flex items-center gap-2 relative z-20">
                     <button onclick="resetDate()" id="resetBtn" class="hidden text-[11px] font-bold text-red-600 bg-white border border-red-300 px-3 py-1.5 rounded-xl hover:bg-red-50 active:scale-95 transition-all">ล้าง</button>
                     <span class="text-blue-500 pointer-events-none">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
-                        </svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
                     </span>
                 </div>
             </div>
         </div>
 
-        <!-- Stats Summary -->
         <div id="summarySection" class="grid grid-cols-3 gap-2 mb-5 hidden">
             <div class="bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl p-3 text-white shadow-lg text-center">
                 <p class="text-[10px] font-bold uppercase tracking-wider opacity-90 mb-1">รายการรวม</p>
@@ -194,13 +161,11 @@
             </div>
         </div>
 
-        <!-- Cash Details -->
         <div id="cashCustomerSection" class="bg-red-50 rounded-3xl p-5 shadow-sm border-2 border-red-200 mb-5 hidden">
             <h3 class="text-sm font-black text-red-700 mb-3 flex items-center gap-2"><span>💸</span> ลูกค้าชำระเงินสดวันนี้</h3>
             <div id="cashCustomerList" class="space-y-2 max-h-48 overflow-y-auto pr-1 hide-scroll"></div>
         </div>
 
-        <!-- Cards Container -->
         <div id="orderContainer">
             <div class="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-gray-300">
                 <p class="text-gray-500 font-medium text-sm">กรุณาเลือกสาขาและวันที่</p>
@@ -208,15 +173,12 @@
         </div>
     </div>
 
-    <!-- ══════════════════════ PAGE 2: PRO PER DAY ══════════════════════ -->
+    <!-- PAGE 2: PRO PER DAY -->
     <div id="overviewPage" class="page hidden">
         <button onclick="toggleOverview()" class="mb-5 text-sm text-gray-600 hover:text-blue-700 flex items-center gap-1 font-bold px-3 py-2 rounded-xl hover:bg-white transition-all shadow-sm bg-white/50 border border-gray-200">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
             กลับไปหน้ารายการ
         </button>
-
         <div class="date-pill-trigger bg-white rounded-3xl p-6 shadow-md border-2 border-blue-200 mb-5 text-center relative overflow-hidden hover:bg-blue-50 transition-colors">
             <input type="date" id="proDatePicker" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onchange="handleDateChange('pro')">
             <p class="text-[11px] font-bold text-blue-600 uppercase tracking-widest mb-1">โปรโมชั่นประจำวันที่</p>
@@ -225,7 +187,6 @@
                 <span class="text-blue-600 text-lg">📅</span>
             </div>
         </div>
-
         <div id="proContentArea" class="space-y-6 mb-10">
             <div class="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-gray-300 text-gray-500 font-medium">
                 กรุณาเลือกวันที่จากหน้ารายการ
@@ -243,27 +204,23 @@ const API_URL = "https://script.google.com/macros/s/AKfycbytao0ZlUz5Rxu8pyaN0H5d
 const TARGET_STORES  = ["5552","5605","9687","13401","13544","15100","16070","16864","17196","18232","18562","18645","18813","19243"];
 const STARRED_STORES = ["5605","18232"];
 
-// ═══════════════════ SECURITY CONFIG ═══════════════════
-const MAX_LOGIN_ATTEMPTS = 3;       // [FIX #3] ล็อคหลังลองผิด 3 ครั้ง
-const LOCKOUT_DURATION_MS = 5 * 60 * 1000; // 5 นาที
-const SESSION_DURATION_MS = 8 * 60 * 60 * 1000; // [FIX #4] session 8 ชั่วโมง
+const MAX_LOGIN_ATTEMPTS  = 3;
+const LOCKOUT_DURATION_MS = 5 * 60 * 1000;
+const SESSION_DURATION_MS = 8 * 60 * 60 * 1000;
 
 // ═══════════════════ STATE ═══════════════════
-let deliveryData = [];
-let proData      = [];
-let currentStore = '';
-let currentMode  = 'general';
-let selectedDate = '';
-
-// Rate-limit state (เก็บใน memory เท่านั้น — reset เมื่อ refresh)
+let deliveryData  = [];
+let proData       = [];
+let currentStore  = '';
+let currentMode   = 'general';
+let selectedDate  = '';
 let loginAttempts = 0;
 let lockoutUntil  = 0;
 let lockoutTimer  = null;
 
 const $ = id => document.getElementById(id);
 
-// ═══════════════════ [FIX #2] HTML ESCAPE ═══════════════════
-// ป้องกัน XSS: ใช้ฟังก์ชันนี้ทุกครั้งก่อนแทรก user-data ลงใน innerHTML
+// ═══════════════════ [FIX #2] XSS ESCAPE ═══════════════════
 function esc(str) {
     if (str === null || str === undefined) return '';
     return String(str)
@@ -274,56 +231,34 @@ function esc(str) {
         .replace(/'/g, '&#039;');
 }
 
-// ═══════════════════ HELPERS ═══════════════════
-function fmtDateTH(iso) {
-    if (!iso) return '—';
-    try {
-        const [y,m,d] = iso.split('-');
-        const MONTHS = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
-        return `${+d} ${MONTHS[+m-1]} ${+y}`;
-    } catch(e) { return iso; }
+// ═══════════════════ [TOKEN] SESSION ═══════════════════
+function getToken() {
+    return sessionStorage.getItem('authToken') || '';
 }
 
-function getKey(obj, kws) {
-    if (!obj || typeof obj !== 'object') return '';
-    return Object.keys(obj).find(k => kws.some(w => String(k).trim().includes(w))) || '';
-}
-
-function progress(pct, done=false) {
-    const pb = $('progressBar');
-    if (!pb) return;
-    pb.style.width   = pct + '%';
-    pb.style.opacity = '1';
-    if (done) setTimeout(() => { if(pb) pb.style.opacity = '0'; }, 400);
-}
-
-function showStatus(html, type='success') {
-    const s = {
-        success: 'bg-green-50 text-green-800 border-green-300',
-        error:   'bg-red-50 text-red-800 border-red-300',
-        info:    'bg-blue-50 text-blue-800 border-blue-300'
-    };
-    const el = $('statusMessage');
-    if (!el) return;
-    el.innerHTML  = html;
-    el.className  = `mb-4 p-4 rounded-2xl text-sm font-bold text-center border-2 ${s[type] || s.info}`;
-    el.classList.remove('hidden');
-    if (type === 'success') setTimeout(() => { if(el) el.classList.add('hidden'); }, 3000);
-}
-
-// ═══════════════════ [FIX #4] SESSION ═══════════════════
-function saveSession(username) {
+function saveSession(username, token) {
+    sessionStorage.setItem('authToken', token);
     sessionStorage.setItem('loginUser', username);
     sessionStorage.setItem('loginTime', Date.now().toString());
 }
 
 function isSessionValid() {
     const loginTime = sessionStorage.getItem('loginTime');
-    if (!loginTime) return false;
+    const token     = getToken();
+    if (!loginTime || !token) return false;
     return (Date.now() - parseInt(loginTime)) < SESSION_DURATION_MS;
 }
 
+// [FIX #4] Logout — บอก GAS ให้ revoke token ด้วย
 function logout() {
+    const token = getToken();
+    if (token) {
+        fetch(API_URL, {
+            method:  'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body:    JSON.stringify({ action: 'logout', token })
+        }).catch(() => {});
+    }
     sessionStorage.clear();
     location.reload();
 }
@@ -337,22 +272,19 @@ setInterval(() => {
 }, 5 * 60 * 1000);
 
 // ═══════════════════ [FIX #3] RATE LIMITING ═══════════════════
-function isLockedOut() {
-    return Date.now() < lockoutUntil;
-}
+function isLockedOut() { return Date.now() < lockoutUntil; }
 
 function startLockoutCountdown() {
     const banner = $('lockoutBanner');
     const cd     = $('lockoutCountdown');
     if (!banner || !cd) return;
-    banner.style.display = 'block';
+    banner.style.display   = 'block';
     $('loginBtn').disabled = true;
-
     lockoutTimer = setInterval(() => {
         const remaining = Math.ceil((lockoutUntil - Date.now()) / 1000);
         if (remaining <= 0) {
             clearInterval(lockoutTimer);
-            banner.style.display = 'none';
+            banner.style.display   = 'none';
             $('loginBtn').disabled = false;
             loginAttempts = 0;
         } else {
@@ -375,10 +307,8 @@ function recordFailedAttempt() {
     }
 }
 
-// ═══════════════════ [FIX #1] AUTH — POST แทน GET ═══════════════════
-// ⚠️ ต้องอัปเดต GAS ให้รับ doPost() ด้วย (ดูหมายเหตุท้ายไฟล์)
+// ═══════════════════ [FIX #1] AUTH — POST + รับ TOKEN ═══════════════════
 function checkLogin() {
-    // เช็ค lockout ก่อน
     if (isLockedOut()) return;
 
     const idVal   = $('userId').value.trim();
@@ -389,32 +319,32 @@ function checkLogin() {
     $('loginBtnText').textContent = 'กำลังตรวจสอบ...';
     $('loginError').classList.add('hidden');
 
-    // [FIX #1] ใช้ POST + JSON body — password ไม่โผล่ใน URL / logs แล้ว
     fetch(API_URL, {
         method:  'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // GAS ต้องการ text/plain สำหรับ doPost
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body:    JSON.stringify({ action: 'login', user: idVal, pass: passVal })
     })
     .then(r => r.json())
     .then(data => {
-        if (data.auth === true) {
-            loginAttempts = 0; // reset นับครั้ง
-            saveSession(idVal); // [FIX #4] บันทึก session
+        // GAS ต้องส่ง { auth: true, token: "uuid..." } กลับมา
+        if (data.auth === true && data.token) {
+            loginAttempts = 0;
+            saveSession(idVal, data.token); // เก็บ token ใน sessionStorage
 
             $('loginGate').style.opacity = '0';
             setTimeout(() => {
                 $('loginGate').style.display = 'none';
                 $('mainContent').style.display = 'block';
                 requestAnimationFrame(() => $('mainContent').classList.add('visible'));
-                $('displayUser').textContent = esc(idVal); // [FIX #2] escape ก่อนแสดง
+                $('displayUser').textContent = esc(idVal);
                 const today = new Date().toISOString().split('T')[0];
-                selectedDate = today;
+                selectedDate             = today;
                 $('datePicker').value    = today;
                 $('proDatePicker').value = today;
                 fetchData();
             }, 350);
         } else {
-            recordFailedAttempt(); // [FIX #3]
+            recordFailedAttempt();
             $('loginCard').classList.add('shake');
             $('loginBtn').disabled        = false;
             $('loginBtnText').textContent = 'เข้าสู่ระบบ';
@@ -428,9 +358,8 @@ function checkLogin() {
     });
 }
 
-// ═══════════════════ DATA FETCHING ═══════════════════
+// ═══════════════════ [TOKEN] DATA FETCHING ═══════════════════
 async function fetchData() {
-    // [FIX #4] เช็ค session ก่อน fetch ข้อมูล
     if (!isSessionValid()) {
         showStatus('⏰ Session หมดอายุ กรุณาเข้าสู่ระบบใหม่', 'error');
         setTimeout(() => logout(), 2000);
@@ -439,9 +368,22 @@ async function fetchData() {
 
     progress(30);
     try {
-        const response = await fetch(API_URL, { method: 'GET', mode: 'cors' });
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const token    = getToken();
+        // แนบ token ไปทุก request — GAS ตรวจก่อนส่งข้อมูล
+        const response = await fetch(`${API_URL}?token=${encodeURIComponent(token)}`, {
+            method: 'GET',
+            mode:   'cors'
+        });
+
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const responseData = await response.json();
+
+        // GAS ส่ง { error: 'unauthorized' } = token ไม่ valid
+        if (responseData.error === 'unauthorized') {
+            showStatus('🔒 หมดสิทธิ์เข้าถึง กรุณาเข้าสู่ระบบใหม่', 'error');
+            setTimeout(() => logout(), 2000);
+            return;
+        }
 
         if (responseData && typeof responseData === 'object') {
             deliveryData = Array.isArray(responseData) ? responseData : (responseData.delivery || responseData.data || []);
@@ -468,20 +410,46 @@ async function fetchData() {
     }
 }
 
+// ═══════════════════ HELPERS ═══════════════════
+function fmtDateTH(iso) {
+    if (!iso) return '—';
+    try {
+        const [y,m,d] = iso.split('-');
+        const MONTHS = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+        return `${+d} ${MONTHS[+m-1]} ${+y}`;
+    } catch(e) { return iso; }
+}
+
+function getKey(obj, kws) {
+    if (!obj || typeof obj !== 'object') return '';
+    return Object.keys(obj).find(k => kws.some(w => String(k).trim().includes(w))) || '';
+}
+
+function progress(pct, done=false) {
+    const pb = $('progressBar');
+    if (!pb) return;
+    pb.style.width   = pct + '%';
+    pb.style.opacity = '1';
+    if (done) setTimeout(() => { if(pb) pb.style.opacity = '0'; }, 400);
+}
+
+function showStatus(html, type='success') {
+    const s = { success:'bg-green-50 text-green-800 border-green-300', error:'bg-red-50 text-red-800 border-red-300', info:'bg-blue-50 text-blue-800 border-blue-300' };
+    const el = $('statusMessage');
+    if (!el) return;
+    el.innerHTML = html;
+    el.className = `mb-4 p-4 rounded-2xl text-sm font-bold text-center border-2 ${s[type] || s.info}`;
+    el.classList.remove('hidden');
+    if (type === 'success') setTimeout(() => { if(el) el.classList.add('hidden'); }, 3000);
+}
+
 function generateMockDelivery() {
     const stores = ["5552","5605","9687"];
     const names  = ["คุณวิชัย","คุณสมศรี","คุณนภา","คุณมานะ"];
     const mock   = [];
     const today  = new Date().toISOString().split('T')[0];
     for (let i = 0; i < 15; i++) {
-        mock.push({
-            "รหัสร้าน": stores[Math.floor(Math.random()*stores.length)],
-            "วันที่":   today,
-            "หมายเลข": 5000 + i,
-            "ราคา":    120 + (i * 15),
-            "ชื่อ":    names[Math.floor(Math.random()*names.length)],
-            "จ่าย":    Math.random() > 0.5 ? "เงินสด" : "โอนเงิน"
-        });
+        mock.push({ "รหัสร้าน": stores[Math.floor(Math.random()*stores.length)], "วันที่": today, "หมายเลข": 5000 + i, "ราคา": 120 + (i * 15), "ชื่อ": names[Math.floor(Math.random()*names.length)], "จ่าย": Math.random() > 0.5 ? "เงินสด" : "โอนเงิน" });
     }
     return mock;
 }
@@ -505,8 +473,7 @@ function populateDropdown(data) {
     sel.innerHTML = '<option value="">— เลือกรหัสร้าน —</option>';
     stores.forEach(s => {
         const o = document.createElement('option');
-        o.value       = s;
-        o.textContent = `🏪 ${s}`; // textContent ปลอดภัยอยู่แล้ว
+        o.value = s; o.textContent = `🏪 ${s}`;
         if (s == currentStore) o.selected = true;
         sel.appendChild(o);
     });
@@ -517,12 +484,12 @@ function renderTargetButtons() {
     if (!grid) return;
     grid.innerHTML = '';
     TARGET_STORES.forEach(store => {
-        const btn     = document.createElement('button');
+        const btn = document.createElement('button');
         const starred = STARRED_STORES.includes(store);
         const active  = currentStore === store;
-        btn.className = `font-bold py-3 rounded-xl text-sm transition-all border-2 ${active ? 'bg-blue-600 text-white shadow-lg border-blue-600' : starred ? 'bg-yellow-50 border-yellow-300 text-yellow-800' : 'bg-white border-gray-200 text-gray-700 shadow-sm hover:border-blue-300'}`;
-        btn.textContent = starred ? `⭐ ${store}` : store; // [FIX #2] textContent แทน innerHTML
-        btn.onclick   = () => { currentStore = store; applyFilters(); renderTargetButtons(); };
+        btn.className   = `font-bold py-3 rounded-xl text-sm transition-all border-2 ${active ? 'bg-blue-600 text-white shadow-lg border-blue-600' : starred ? 'bg-yellow-50 border-yellow-300 text-yellow-800' : 'bg-white border-gray-200 text-gray-700 shadow-sm hover:border-blue-300'}`;
+        btn.textContent = starred ? `⭐ ${store}` : store;
+        btn.onclick     = () => { currentStore = store; applyFilters(); renderTargetButtons(); };
         grid.appendChild(btn);
     });
     if ($('targetBadge')) $('targetBadge').textContent = TARGET_STORES.length;
@@ -537,14 +504,9 @@ function switchTab(mode) {
 }
 
 function handleDateChange(source) {
-    let newDate = '';
-    if (source === 'list') {
-        newDate = $('datePicker').value;
-        $('proDatePicker').value = newDate;
-    } else {
-        newDate = $('proDatePicker').value;
-        $('datePicker').value = newDate;
-    }
+    let newDate = source === 'list' ? $('datePicker').value : $('proDatePicker').value;
+    if (source === 'list') $('proDatePicker').value = newDate;
+    else $('datePicker').value = newDate;
     selectedDate = newDate;
     applyFilters();
     const op = $('overviewPage');
@@ -555,13 +517,8 @@ function applyFilters() {
     if (currentMode === 'general' && $('storeSelect')) currentStore = $('storeSelect').value;
     const pickedDate = selectedDate;
 
-    if (pickedDate) {
-        $('periodRange').textContent = fmtDateTH(pickedDate); // textContent ปลอดภัย
-        $('resetBtn').classList.remove('hidden');
-    } else {
-        $('periodRange').textContent = '— เลือกวันที่ —';
-        $('resetBtn').classList.add('hidden');
-    }
+    if (pickedDate) { $('periodRange').textContent = fmtDateTH(pickedDate); $('resetBtn').classList.remove('hidden'); }
+    else { $('periodRange').textContent = '— เลือกวันที่ —'; $('resetBtn').classList.add('hidden'); }
 
     const promoBadge = $('promoBadge');
     if (promoBadge) {
@@ -576,8 +533,7 @@ function applyFilters() {
     const container = $('orderContainer');
     if (!currentStore || !pickedDate) {
         container.innerHTML = '<div class="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-gray-300 font-bold text-gray-500">กรุณาเลือกสาขาและวันที่</div>';
-        $('summarySection').classList.add('hidden');
-        $('cashCustomerSection').classList.add('hidden');
+        $('summarySection').classList.add('hidden'); $('cashCustomerSection').classList.add('hidden');
         return;
     }
 
@@ -592,14 +548,12 @@ function applyFilters() {
 
     const filtered = deliveryData.filter(item => {
         if (String(item[storeKey]) !== currentStore) return false;
-        const d = String(item[dateKey] || '').split('T')[0];
-        return d === pickedDate;
+        return String(item[dateKey] || '').split('T')[0] === pickedDate;
     });
 
     if (!filtered.length) {
         container.innerHTML = '<div class="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-gray-300 font-bold text-gray-500">ไม่มีข้อมูลการสั่งซื้อในวันที่เลือก</div>';
-        $('summarySection').classList.add('hidden');
-        $('cashCustomerSection').classList.add('hidden');
+        $('summarySection').classList.add('hidden'); $('cashCustomerSection').classList.add('hidden');
         return;
     }
 
@@ -610,7 +564,6 @@ function applyFilters() {
     const cashList = filtered.filter(i => String(i[payKey] || '').includes('สด'));
     $('totalCash').textContent = cashList.length;
 
-    // [FIX #2] ใช้ esc() ทุกจุดที่แทรกข้อมูลจาก API ลงใน innerHTML
     const cashDetailList = $('cashCustomerList');
     if (cashList.length > 0 && cashDetailList) {
         $('cashCustomerSection').classList.remove('hidden');
@@ -620,11 +573,8 @@ function applyFilters() {
             <div class="flex justify-between items-center bg-white px-4 py-3 rounded-2xl border border-red-100 shadow-sm">
                 <span class="text-[15px] font-black text-gray-800">${esc(name)}</span>
                 <span class="text-[11px] bg-red-100 text-red-700 px-3 py-1.5 rounded-lg font-black border border-red-200">เงินสด ${esc(count)} ออเดอร์</span>
-            </div>
-        `).join('');
-    } else {
-        $('cashCustomerSection').classList.add('hidden');
-    }
+            </div>`).join('');
+    } else { $('cashCustomerSection').classList.add('hidden'); }
 
     container.innerHTML = filtered
         .sort((a,b) => String(b[idKey]).localeCompare(String(a[idKey]), undefined, {numeric:true}))
@@ -648,9 +598,7 @@ function applyFilters() {
 }
 
 function resetDate() {
-    selectedDate           = '';
-    $('datePicker').value    = '';
-    $('proDatePicker').value = '';
+    selectedDate = ''; $('datePicker').value = ''; $('proDatePicker').value = '';
     applyFilters();
     const op = $('overviewPage');
     if (op && !op.classList.contains('hidden')) renderProContent();
@@ -659,55 +607,37 @@ function resetDate() {
 function toggleOverview() {
     const lp = $('listViewPage'), op = $('overviewPage');
     if (!lp || !op) return;
-    if (op.classList.contains('hidden')) {
-        lp.classList.add('hidden'); op.classList.remove('hidden');
-        renderProContent();
-    } else {
-        op.classList.add('hidden'); lp.classList.remove('hidden');
-    }
+    if (op.classList.contains('hidden')) { lp.classList.add('hidden'); op.classList.remove('hidden'); renderProContent(); }
+    else { op.classList.add('hidden'); lp.classList.remove('hidden'); }
 }
 
 function getCleanImageUrl(url) {
     if (!url) return '';
     let clean = String(url).trim();
     const fileMatch = clean.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
-    if (fileMatch && fileMatch[1]) return `https://drive.google.com/uc?id=${fileMatch[1]}&export=view`;
+    if (fileMatch) return `https://drive.google.com/uc?id=${fileMatch[1]}&export=view`;
     const idMatch = clean.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-    if (idMatch && idMatch[1]) return `https://drive.google.com/uc?id=${idMatch[1]}&export=view`;
+    if (idMatch) return `https://drive.google.com/uc?id=${idMatch[1]}&export=view`;
     return clean;
 }
 
 function renderProContent() {
     const pickedDate  = selectedDate;
     const contentArea = $('proContentArea');
-
     if (!pickedDate) {
         $('ovDateDisplay').textContent = "กรุณาเลือกวันที่";
         contentArea.innerHTML = '<div class="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-gray-300 font-bold text-gray-500">เลือกวันที่จากหน้ารายการก่อนดูโปรโมชั่น</div>';
         return;
     }
-
     const day = parseInt(pickedDate.split('-')[2], 10);
     $('ovDateDisplay').textContent = fmtDateTH(pickedDate);
-
-    if (!proData || proData.length === 0) {
-        contentArea.innerHTML = '<div class="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-gray-300 font-bold text-gray-500">ไม่มีข้อมูลโปรโมชั่น</div>';
-        return;
-    }
-
+    if (!proData || proData.length === 0) { contentArea.innerHTML = '<div class="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-gray-300 font-bold text-gray-500">ไม่มีข้อมูลโปรโมชั่น</div>'; return; }
     const todayPro = proData.find(item => (item.A == day || item['day'] == day || item['วันที่'] == day));
-    if (!todayPro) {
-        contentArea.innerHTML = '<div class="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-gray-300 font-bold text-gray-500">ไม่มีโปรโมชั่นสำหรับวันที่เลือก</div>';
-        return;
-    }
-
+    if (!todayPro) { contentArea.innerHTML = '<div class="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-gray-300 font-bold text-gray-500">ไม่มีโปรโมชั่นสำหรับวันที่เลือก</div>'; return; }
     const img1 = getCleanImageUrl(todayPro.B || todayPro.imageUrl1);
     const msg  = todayPro.C || todayPro.message;
     const img2 = getCleanImageUrl(todayPro.D || todayPro.imageUrl2);
     const fallbackImg = "data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%25%22 height=%22200%22 viewBox=%220 0 100 100%22 preserveAspectRatio=%22none%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23f8fafc%22/%3E%3Ctext x=%2250%22 y=%2250%22 font-family=%22sans-serif%22 font-size=%224%22 font-weight=%22bold%22 text-anchor=%22middle%22 alignment-baseline=%22middle%22 fill=%22%2394a3b8%22%3Eภาพไม่พร้อมใช้งาน%3C/text%3E%3C/svg%3E";
-
-    // [FIX #2] msg ที่เป็น text จาก API ต้อง escape ก่อน แต่ URL ของรูปไม่ต้อง (ใช้ใน src)
-    // img src ปลอดภัยเพราะผ่าน getCleanImageUrl() แล้ว (regex เท่านั้น)
     contentArea.innerHTML = `
         ${img1 ? `<img src="${img1}" class="pro-image card-animate" style="animation-delay:50ms" onerror="this.onerror=null;this.src='${fallbackImg}'">` : ''}
         ${msg  ? `<div class="bg-gradient-to-br from-yellow-50 to-white p-6 rounded-3xl border-2 border-yellow-200 shadow-md card-animate" style="animation-delay:150ms">
@@ -722,33 +652,8 @@ window.onload = () => {
     const userIdInput   = $('userId');
     const userPassInput = $('userPass');
     if (userIdInput)   userIdInput.addEventListener('keypress',   e => { if (e.key === 'Enter') userPassInput.focus(); });
-    if (userPassInput) userPassInput.addEventListener('keypress', e => { if (e.key === 'Enter') { if(!isLockedOut()) checkLogin(); } });
+    if (userPassInput) userPassInput.addEventListener('keypress', e => { if (e.key === 'Enter') { if (!isLockedOut()) checkLogin(); } });
 };
-
-/*
-════════════════════════════════════════════════════════
-  ⚠️  หมายเหตุสำหรับ Google Apps Script (GAS)
-════════════════════════════════════════════════════════
-  เนื่องจากเปลี่ยน login จาก GET → POST แล้ว
-  ต้องเพิ่ม doPost() ใน GAS ด้วย ตัวอย่าง:
-
-  function doPost(e) {
-    try {
-      const body = JSON.parse(e.postData.contents);
-      if (body.action === 'login') {
-        const ok = checkCredentials(body.user, body.pass); // logic เดิม
-        return ContentService
-          .createTextOutput(JSON.stringify({ auth: ok }))
-          .setMimeType(ContentService.MimeType.JSON);
-      }
-    } catch(err) {
-      return ContentService
-        .createTextOutput(JSON.stringify({ auth: false }))
-        .setMimeType(ContentService.MimeType.JSON);
-    }
-  }
-════════════════════════════════════════════════════════
-*/
 </script>
 </body>
 </html>
