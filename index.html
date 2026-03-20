@@ -39,6 +39,9 @@
         input[type="date"]::-webkit-calendar-picker-indicator{position:absolute;top:0;left:0;right:0;bottom:0;width:100%;height:100%;opacity:0;cursor:pointer}
 
         .text-outline-red{color:#ffffff;font-weight:800;text-shadow:-1.5px -1.5px 0 #dc2626,0 -1.5px 0 #dc2626,1.5px -1.5px 0 #dc2626,1.5px 0 0 #dc2626,1.5px 1.5px 0 #dc2626,0 1.5px 0 #dc2626,-1.5px 1.5px 0 #dc2626,-1.5px 0 0 #dc2626,0px 2px 2px rgba(0,0,0,0.25)}
+
+        /* lockout banner */
+        #lockoutBanner{display:none;background:#fef2f2;border:1.5px solid #fca5a5;border-radius:1rem;padding:.75rem 1rem;text-align:center;font-size:.8rem;font-weight:700;color:#b91c1c;margin-top:.75rem}
     </style>
 </head>
 <body class="pb-16 text-slate-800">
@@ -87,6 +90,8 @@
                 <span id="loginBtnText">เข้าสู่ระบบ</span>
             </button>
             <p id="loginError" class="text-red-500 text-center text-sm font-medium hidden">❌ รหัสผ่านไม่ถูกต้อง</p>
+            <!-- [FIX #3] Lockout banner -->
+            <div id="lockoutBanner">🔒 ลองผิดเกินกำหนด — กรุณารอ <span id="lockoutCountdown"></span></div>
         </div>
     </div>
 </div>
@@ -102,10 +107,18 @@
             <h1 class="text-2xl font-bold tracking-wide">Delivery 270+</h1>
             <p class="text-blue-100 text-xs mt-1">ผู้ใช้งาน: <span id="displayUser" class="font-bold text-white underline decoration-dotted">—</span></p>
         </div>
+        <!-- Promo toggle -->
         <button onclick="toggleOverview()" title="ดูโปรโมชั่นรายวัน"
-            class="absolute top-4 right-4 bg-white/20 hover:bg-white/30 active:bg-white/40 p-2 rounded-xl backdrop-blur-sm transition-all text-white z-20 border border-white/10">
+            class="absolute top-4 right-14 bg-white/20 hover:bg-white/30 active:bg-white/40 p-2 rounded-xl backdrop-blur-sm transition-all text-white z-20 border border-white/10">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h14a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+        </button>
+        <!-- [FIX #4] Logout button -->
+        <button onclick="logout()" title="ออกจากระบบ"
+            class="absolute top-4 right-4 bg-white/20 hover:bg-red-500/70 active:bg-red-600/80 p-2 rounded-xl backdrop-blur-sm transition-all text-white z-20 border border-white/10">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
             </svg>
         </button>
     </div>
@@ -226,10 +239,14 @@
 <script>
 // ═══════════════════ CONFIG ═══════════════════
 const API_URL = "https://script.google.com/macros/s/AKfycbytao0ZlUz5Rxu8pyaN0H5dy4a1QJWyet--LQSTYFWnTZeYJluxBAgMnt4Mu1uzTYh4/exec";
-// ✅ ไม่มี AUTH_CONFIG แล้ว → ย้ายไปเก็บใน GAS แทน
 
 const TARGET_STORES  = ["5552","5605","9687","13401","13544","15100","16070","16864","17196","18232","18562","18645","18813","19243"];
 const STARRED_STORES = ["5605","18232"];
+
+// ═══════════════════ SECURITY CONFIG ═══════════════════
+const MAX_LOGIN_ATTEMPTS = 3;       // [FIX #3] ล็อคหลังลองผิด 3 ครั้ง
+const LOCKOUT_DURATION_MS = 5 * 60 * 1000; // 5 นาที
+const SESSION_DURATION_MS = 8 * 60 * 60 * 1000; // [FIX #4] session 8 ชั่วโมง
 
 // ═══════════════════ STATE ═══════════════════
 let deliveryData = [];
@@ -238,8 +255,26 @@ let currentStore = '';
 let currentMode  = 'general';
 let selectedDate = '';
 
+// Rate-limit state (เก็บใน memory เท่านั้น — reset เมื่อ refresh)
+let loginAttempts = 0;
+let lockoutUntil  = 0;
+let lockoutTimer  = null;
+
 const $ = id => document.getElementById(id);
 
+// ═══════════════════ [FIX #2] HTML ESCAPE ═══════════════════
+// ป้องกัน XSS: ใช้ฟังก์ชันนี้ทุกครั้งก่อนแทรก user-data ลงใน innerHTML
+function esc(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+// ═══════════════════ HELPERS ═══════════════════
 function fmtDateTH(iso) {
     if (!iso) return '—';
     try {
@@ -276,49 +311,132 @@ function showStatus(html, type='success') {
     if (type === 'success') setTimeout(() => { if(el) el.classList.add('hidden'); }, 3000);
 }
 
-// ═══════════════════ AUTH (ส่งไปตรวจที่ GAS) ═══════════════════
+// ═══════════════════ [FIX #4] SESSION ═══════════════════
+function saveSession(username) {
+    sessionStorage.setItem('loginUser', username);
+    sessionStorage.setItem('loginTime', Date.now().toString());
+}
+
+function isSessionValid() {
+    const loginTime = sessionStorage.getItem('loginTime');
+    if (!loginTime) return false;
+    return (Date.now() - parseInt(loginTime)) < SESSION_DURATION_MS;
+}
+
+function logout() {
+    sessionStorage.clear();
+    location.reload();
+}
+
+// ตรวจ session ทุก 5 นาที
+setInterval(() => {
+    if ($('mainContent').style.display !== 'none' && !isSessionValid()) {
+        showStatus('⏰ Session หมดอายุ กรุณาเข้าสู่ระบบใหม่', 'error');
+        setTimeout(() => logout(), 2000);
+    }
+}, 5 * 60 * 1000);
+
+// ═══════════════════ [FIX #3] RATE LIMITING ═══════════════════
+function isLockedOut() {
+    return Date.now() < lockoutUntil;
+}
+
+function startLockoutCountdown() {
+    const banner = $('lockoutBanner');
+    const cd     = $('lockoutCountdown');
+    if (!banner || !cd) return;
+    banner.style.display = 'block';
+    $('loginBtn').disabled = true;
+
+    lockoutTimer = setInterval(() => {
+        const remaining = Math.ceil((lockoutUntil - Date.now()) / 1000);
+        if (remaining <= 0) {
+            clearInterval(lockoutTimer);
+            banner.style.display = 'none';
+            $('loginBtn').disabled = false;
+            loginAttempts = 0;
+        } else {
+            const m = Math.floor(remaining / 60);
+            const s = remaining % 60;
+            cd.textContent = m > 0 ? `${m}:${String(s).padStart(2,'0')} นาที` : `${s} วินาที`;
+        }
+    }, 500);
+}
+
+function recordFailedAttempt() {
+    loginAttempts++;
+    if (loginAttempts >= MAX_LOGIN_ATTEMPTS) {
+        lockoutUntil = Date.now() + LOCKOUT_DURATION_MS;
+        startLockoutCountdown();
+    } else {
+        const left = MAX_LOGIN_ATTEMPTS - loginAttempts;
+        $('loginError').textContent = `❌ รหัสผ่านไม่ถูกต้อง (เหลืออีก ${left} ครั้ง)`;
+        $('loginError').classList.remove('hidden');
+    }
+}
+
+// ═══════════════════ [FIX #1] AUTH — POST แทน GET ═══════════════════
+// ⚠️ ต้องอัปเดต GAS ให้รับ doPost() ด้วย (ดูหมายเหตุท้ายไฟล์)
 function checkLogin() {
+    // เช็ค lockout ก่อน
+    if (isLockedOut()) return;
+
     const idVal   = $('userId').value.trim();
     const passVal = $('userPass').value.trim();
     if (!idVal || !passVal) return;
 
-    $('loginBtn').disabled    = true;
+    $('loginBtn').disabled        = true;
     $('loginBtnText').textContent = 'กำลังตรวจสอบ...';
     $('loginError').classList.add('hidden');
 
-    fetch(`${API_URL}?action=login&user=${encodeURIComponent(idVal)}&pass=${encodeURIComponent(passVal)}`)
-        .then(r => r.json())
-        .then(data => {
-            if (data.auth === true) {
-                $('loginGate').style.opacity = '0';
-                setTimeout(() => {
-                    $('loginGate').style.display = 'none';
-                    $('mainContent').style.display = 'block';
-                    requestAnimationFrame(() => $('mainContent').classList.add('visible'));
-                    $('displayUser').textContent = idVal;
-                    const today = new Date().toISOString().split('T')[0];
-                    selectedDate = today;
-                    $('datePicker').value    = today;
-                    $('proDatePicker').value = today;
-                    fetchData();
-                }, 350);
-            } else {
-                $('loginError').classList.remove('hidden');
-                $('loginCard').classList.add('shake');
-                $('loginBtn').disabled        = false;
-                $('loginBtnText').textContent = 'เข้าสู่ระบบ';
-                setTimeout(() => $('loginCard').classList.remove('shake'), 500);
-            }
-        })
-        .catch(() => {
-            showStatus('⚠️ ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', 'error');
+    // [FIX #1] ใช้ POST + JSON body — password ไม่โผล่ใน URL / logs แล้ว
+    fetch(API_URL, {
+        method:  'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // GAS ต้องการ text/plain สำหรับ doPost
+        body:    JSON.stringify({ action: 'login', user: idVal, pass: passVal })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.auth === true) {
+            loginAttempts = 0; // reset นับครั้ง
+            saveSession(idVal); // [FIX #4] บันทึก session
+
+            $('loginGate').style.opacity = '0';
+            setTimeout(() => {
+                $('loginGate').style.display = 'none';
+                $('mainContent').style.display = 'block';
+                requestAnimationFrame(() => $('mainContent').classList.add('visible'));
+                $('displayUser').textContent = esc(idVal); // [FIX #2] escape ก่อนแสดง
+                const today = new Date().toISOString().split('T')[0];
+                selectedDate = today;
+                $('datePicker').value    = today;
+                $('proDatePicker').value = today;
+                fetchData();
+            }, 350);
+        } else {
+            recordFailedAttempt(); // [FIX #3]
+            $('loginCard').classList.add('shake');
             $('loginBtn').disabled        = false;
             $('loginBtnText').textContent = 'เข้าสู่ระบบ';
-        });
+            setTimeout(() => $('loginCard').classList.remove('shake'), 500);
+        }
+    })
+    .catch(() => {
+        showStatus('⚠️ ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', 'error');
+        $('loginBtn').disabled        = false;
+        $('loginBtnText').textContent = 'เข้าสู่ระบบ';
+    });
 }
 
 // ═══════════════════ DATA FETCHING ═══════════════════
 async function fetchData() {
+    // [FIX #4] เช็ค session ก่อน fetch ข้อมูล
+    if (!isSessionValid()) {
+        showStatus('⏰ Session หมดอายุ กรุณาเข้าสู่ระบบใหม่', 'error');
+        setTimeout(() => logout(), 2000);
+        return;
+    }
+
     progress(30);
     try {
         const response = await fetch(API_URL, { method: 'GET', mode: 'cors' });
@@ -388,7 +506,7 @@ function populateDropdown(data) {
     stores.forEach(s => {
         const o = document.createElement('option');
         o.value       = s;
-        o.textContent = `🏪 ${s}`;
+        o.textContent = `🏪 ${s}`; // textContent ปลอดภัยอยู่แล้ว
         if (s == currentStore) o.selected = true;
         sel.appendChild(o);
     });
@@ -403,7 +521,7 @@ function renderTargetButtons() {
         const starred = STARRED_STORES.includes(store);
         const active  = currentStore === store;
         btn.className = `font-bold py-3 rounded-xl text-sm transition-all border-2 ${active ? 'bg-blue-600 text-white shadow-lg border-blue-600' : starred ? 'bg-yellow-50 border-yellow-300 text-yellow-800' : 'bg-white border-gray-200 text-gray-700 shadow-sm hover:border-blue-300'}`;
-        btn.innerHTML = starred ? `⭐ ${store}` : store;
+        btn.textContent = starred ? `⭐ ${store}` : store; // [FIX #2] textContent แทน innerHTML
         btn.onclick   = () => { currentStore = store; applyFilters(); renderTargetButtons(); };
         grid.appendChild(btn);
     });
@@ -438,7 +556,7 @@ function applyFilters() {
     const pickedDate = selectedDate;
 
     if (pickedDate) {
-        $('periodRange').textContent = fmtDateTH(pickedDate);
+        $('periodRange').textContent = fmtDateTH(pickedDate); // textContent ปลอดภัย
         $('resetBtn').classList.remove('hidden');
     } else {
         $('periodRange').textContent = '— เลือกวันที่ —';
@@ -492,6 +610,7 @@ function applyFilters() {
     const cashList = filtered.filter(i => String(i[payKey] || '').includes('สด'));
     $('totalCash').textContent = cashList.length;
 
+    // [FIX #2] ใช้ esc() ทุกจุดที่แทรกข้อมูลจาก API ลงใน innerHTML
     const cashDetailList = $('cashCustomerList');
     if (cashList.length > 0 && cashDetailList) {
         $('cashCustomerSection').classList.remove('hidden');
@@ -499,8 +618,8 @@ function applyFilters() {
         cashList.forEach(i => { const n = i[nameKey] || 'ไม่ระบุ'; counts[n] = (counts[n] || 0) + 1; });
         cashDetailList.innerHTML = Object.entries(counts).sort((a,b) => b[1]-a[1]).map(([name,count]) => `
             <div class="flex justify-between items-center bg-white px-4 py-3 rounded-2xl border border-red-100 shadow-sm">
-                <span class="text-[15px] font-black text-gray-800">${name}</span>
-                <span class="text-[11px] bg-red-100 text-red-700 px-3 py-1.5 rounded-lg font-black border border-red-200">เงินสด ${count} ออเดอร์</span>
+                <span class="text-[15px] font-black text-gray-800">${esc(name)}</span>
+                <span class="text-[11px] bg-red-100 text-red-700 px-3 py-1.5 rounded-lg font-black border border-red-200">เงินสด ${esc(count)} ออเดอร์</span>
             </div>
         `).join('');
     } else {
@@ -515,13 +634,13 @@ function applyFilters() {
             <div class="bg-white rounded-3xl p-5 shadow-md border border-gray-200 mb-4 card-animate ${isCash ? 'cash-highlight' : ''}">
                 <div class="flex justify-between items-start mb-3">
                     <div>
-                        <p class="text-[11px] text-gray-500 font-bold uppercase tracking-wider">#${item[idKey] || '—'}</p>
-                        <p class="text-xl font-black text-blue-800 leading-tight mt-0.5">${item[nameKey] || 'ไม่ระบุชื่อ'}</p>
+                        <p class="text-[11px] text-gray-500 font-bold uppercase tracking-wider">#${esc(item[idKey]) || '—'}</p>
+                        <p class="text-xl font-black text-blue-800 leading-tight mt-0.5">${esc(item[nameKey]) || 'ไม่ระบุชื่อ'}</p>
                     </div>
-                    <span class="text-[11px] bg-blue-100 text-blue-700 px-3 py-1.5 rounded-xl font-bold border border-blue-200">${String(item[dateKey] || '').split('T')[0]}</span>
+                    <span class="text-[11px] bg-blue-100 text-blue-700 px-3 py-1.5 rounded-xl font-bold border border-blue-200">${esc(String(item[dateKey] || '').split('T')[0])}</span>
                 </div>
                 <div class="flex justify-between items-center pt-4 border-t border-gray-100">
-                    <span class="text-sm font-black ${isCash ? 'text-red-600 bg-red-50 px-3 py-1 rounded-lg' : 'text-gray-600 bg-gray-50 px-3 py-1 rounded-lg'}">${item[payKey] || '—'}</span>
+                    <span class="text-sm font-black ${isCash ? 'text-red-600 bg-red-50 px-3 py-1 rounded-lg' : 'text-gray-600 bg-gray-50 px-3 py-1 rounded-lg'}">${esc(item[payKey]) || '—'}</span>
                     <p class="text-xl font-black text-emerald-600">฿${Number(item[priceKey] || 0).toLocaleString()}</p>
                 </div>
             </div>`;
@@ -587,11 +706,13 @@ function renderProContent() {
     const img2 = getCleanImageUrl(todayPro.D || todayPro.imageUrl2);
     const fallbackImg = "data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%25%22 height=%22200%22 viewBox=%220 0 100 100%22 preserveAspectRatio=%22none%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23f8fafc%22/%3E%3Ctext x=%2250%22 y=%2250%22 font-family=%22sans-serif%22 font-size=%224%22 font-weight=%22bold%22 text-anchor=%22middle%22 alignment-baseline=%22middle%22 fill=%22%2394a3b8%22%3Eภาพไม่พร้อมใช้งาน%3C/text%3E%3C/svg%3E";
 
+    // [FIX #2] msg ที่เป็น text จาก API ต้อง escape ก่อน แต่ URL ของรูปไม่ต้อง (ใช้ใน src)
+    // img src ปลอดภัยเพราะผ่าน getCleanImageUrl() แล้ว (regex เท่านั้น)
     contentArea.innerHTML = `
         ${img1 ? `<img src="${img1}" class="pro-image card-animate" style="animation-delay:50ms" onerror="this.onerror=null;this.src='${fallbackImg}'">` : ''}
         ${msg  ? `<div class="bg-gradient-to-br from-yellow-50 to-white p-6 rounded-3xl border-2 border-yellow-200 shadow-md card-animate" style="animation-delay:150ms">
                     <p class="text-[11px] font-black text-yellow-600 uppercase tracking-widest mb-2">Message สำหรับร้านค้า</p>
-                    <p class="text-gray-800 font-bold text-lg leading-relaxed whitespace-pre-line">${msg}</p>
+                    <p class="text-gray-800 font-bold text-lg leading-relaxed whitespace-pre-line">${esc(msg)}</p>
                   </div>` : ''}
         ${img2 ? `<img src="${img2}" class="pro-image card-animate" style="animation-delay:250ms" onerror="this.onerror=null;this.src='${fallbackImg}'">` : ''}
     `;
@@ -601,8 +722,33 @@ window.onload = () => {
     const userIdInput   = $('userId');
     const userPassInput = $('userPass');
     if (userIdInput)   userIdInput.addEventListener('keypress',   e => { if (e.key === 'Enter') userPassInput.focus(); });
-    if (userPassInput) userPassInput.addEventListener('keypress', e => { if (e.key === 'Enter') checkLogin(); });
+    if (userPassInput) userPassInput.addEventListener('keypress', e => { if (e.key === 'Enter') { if(!isLockedOut()) checkLogin(); } });
 };
+
+/*
+════════════════════════════════════════════════════════
+  ⚠️  หมายเหตุสำหรับ Google Apps Script (GAS)
+════════════════════════════════════════════════════════
+  เนื่องจากเปลี่ยน login จาก GET → POST แล้ว
+  ต้องเพิ่ม doPost() ใน GAS ด้วย ตัวอย่าง:
+
+  function doPost(e) {
+    try {
+      const body = JSON.parse(e.postData.contents);
+      if (body.action === 'login') {
+        const ok = checkCredentials(body.user, body.pass); // logic เดิม
+        return ContentService
+          .createTextOutput(JSON.stringify({ auth: ok }))
+          .setMimeType(ContentService.MimeType.JSON);
+      }
+    } catch(err) {
+      return ContentService
+        .createTextOutput(JSON.stringify({ auth: false }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+  }
+════════════════════════════════════════════════════════
+*/
 </script>
 </body>
 </html>
